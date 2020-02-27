@@ -1,0 +1,25 @@
+# Nmap 7.80 scan initiated Tue Feb 25 13:26:49 2020 as: nmap -p- --max-retries 5 --min-rate 5000 -oN sauna_all_port sauna.htb
+Nmap scan report for sauna.htb (10.10.10.175)
+Host is up (0.41s latency).
+Not shown: 65517 filtered ports
+PORT      STATE SERVICE
+53/tcp    open  domain
+80/tcp    open  http
+88/tcp    open  kerberos-sec
+135/tcp   open  msrpc
+139/tcp   open  netbios-ssn
+389/tcp   open  ldap
+445/tcp   open  microsoft-ds
+464/tcp   open  kpasswd5
+593/tcp   open  http-rpc-epmap
+636/tcp   open  ldapssl
+3268/tcp  open  globalcatLDAP
+3269/tcp  open  globalcatLDAPssl
+5985/tcp  open  wsman
+9389/tcp  open  adws
+49667/tcp open  unknown
+49669/tcp open  unknown
+49671/tcp open  unknown
+49682/tcp open  unknown
+
+# Nmap done at Tue Feb 25 13:27:30 2020 -- 1 IP address (1 host up) scanned in 41.37 seconds
