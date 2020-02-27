@@ -1,0 +1,6 @@
+username = 'telegen',password = 'd-bC|jC!2uepS/w'
+
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "integrity";
