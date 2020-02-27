@@ -1,0 +1,30 @@
+# Nmap 7.80 scan initiated Mon Feb  3 02:28:29 2020 as: nmap -A -sC -sV -oN nmap.scan nest.htb
+Nmap scan report for nest.htb (10.10.10.178)
+Host is up (0.22s latency).
+Not shown: 999 filtered ports
+PORT    STATE SERVICE       VERSION
+445/tcp open  microsoft-ds?
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Device type: general purpose|phone|specialized
+Running (JUST GUESSING): Microsoft Windows 8|Phone|2008|7|8.1|Vista|2012 (92%)
+OS CPE: cpe:/o:microsoft:windows_8 cpe:/o:microsoft:windows cpe:/o:microsoft:windows_server_2008:r2 cpe:/o:microsoft:windows_7 cpe:/o:microsoft:windows_8.1 cpe:/o:microsoft:windows_vista::- cpe:/o:microsoft:windows_vista::sp1 cpe:/o:microsoft:windows_server_2012
+Aggressive OS guesses: Microsoft Windows 8.1 Update 1 (92%), Microsoft Windows Phone 7.5 or 8.0 (92%), Microsoft Windows 7 or Windows Server 2008 R2 (91%), Microsoft Windows Server 2008 R2 (91%), Microsoft Windows Server 2008 R2 or Windows 8.1 (91%), Microsoft Windows Server 2008 R2 SP1 or Windows 8 (91%), Microsoft Windows 7 (91%), Microsoft Windows 7 Professional or Windows 8 (91%), Microsoft Windows 7 SP1 or Windows Server 2008 R2 (91%), Microsoft Windows 7 SP1 or Windows Server 2008 SP2 or 2008 R2 SP1 (91%)
+No exact OS matches for host (test conditions non-ideal).
+Network Distance: 2 hops
+
+Host script results:
+|_clock-skew: 1m09s
+| smb2-security-mode: 
+|   2.02: 
+|_    Message signing enabled but not required
+| smb2-time: 
+|   date: 2020-02-03T02:30:42
+|_  start_date: 2020-02-03T00:04:54
+
+TRACEROUTE (using port 445/tcp)
+HOP RTT       ADDRESS
+1   237.43 ms 10.10.14.1
+2   237.49 ms nest.htb (10.10.10.178)
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Mon Feb  3 02:30:09 2020 -- 1 IP address (1 host up) scanned in 100.09 seconds

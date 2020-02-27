@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<ServiceSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Port>4386</Port>
+  <QueryDirectory>C:\Program Files\HQK\ALL QUERIES</QueryDirectory>
+</ServiceSettings>

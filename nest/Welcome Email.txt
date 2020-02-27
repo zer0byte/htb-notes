@@ -1,0 +1,14 @@
+We would like to extend a warm welcome to our newest member of staff, <FIRSTNAME> <SURNAME>
+
+You will find your home folder in the following location: 
+\\HTB-NEST\Users\<USERNAME>
+
+If you have any issues accessing specific services or workstations, please inform the 
+IT department and use the credentials below until all systems have been set up for you.
+
+Username: TempUser
+Password: welcome2019
+
+
+Thank you
+HR
