@@ -1,0 +1,12 @@
+# Nmap 7.80 scan initiated Fri Jan 10 04:23:33 2020 as: nmap -p- --max-retries 5 --min-rate 5000 -oN nmap.allport control.htb
+Nmap scan report for control.htb (10.10.10.167)
+Host is up (0.23s latency).
+Not shown: 65530 filtered ports
+PORT      STATE SERVICE
+80/tcp    open  http
+135/tcp   open  msrpc
+3306/tcp  open  mysql
+49666/tcp open  unknown
+49667/tcp open  unknown
+
+# Nmap done at Fri Jan 10 04:24:13 2020 -- 1 IP address (1 host up) scanned in 40.32 seconds

@@ -1,0 +1,42 @@
+# Nmap 7.80 scan initiated Fri Jan 10 04:18:17 2020 as: nmap -A -v -Pn -sC -sV -oN nmap.scan control.htb
+Nmap scan report for control.htb (10.10.10.167)
+Host is up (0.22s latency).
+Not shown: 997 filtered ports
+PORT     STATE SERVICE VERSION
+80/tcp   open  http    Microsoft IIS httpd 10.0
+| http-methods: 
+|   Supported Methods: OPTIONS TRACE GET HEAD POST
+|_  Potentially risky methods: TRACE
+|_http-server-header: Microsoft-IIS/10.0
+|_http-title: Fidelity
+135/tcp  open  msrpc   Microsoft Windows RPC
+3306/tcp open  mysql?
+| fingerprint-strings: 
+|   DNSVersionBindReqTCP, TLSSessionReq: 
+|_    Host '10.10.14.134' is not allowed to connect to this MariaDB server
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port3306-TCP:V=7.80%I=7%D=1/10%Time=5E17FB26%P=x86_64-unknown-linux-gnu
+SF:%r(DNSVersionBindReqTCP,4B,"G\0\0\x01\xffj\x04Host\x20'10\.10\.14\.134'
+SF:\x20is\x20not\x20allowed\x20to\x20connect\x20to\x20this\x20MariaDB\x20s
+SF:erver")%r(TLSSessionReq,4B,"G\0\0\x01\xffj\x04Host\x20'10\.10\.14\.134'
+SF:\x20is\x20not\x20allowed\x20to\x20connect\x20to\x20this\x20MariaDB\x20s
+SF:erver");
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Device type: printer|broadband router|media device
+Running (JUST GUESSING): Ricoh embedded (90%), OneAccess embedded (88%), Sony embedded (86%)
+OS CPE: cpe:/h:ricoh:aficio_sp_c240sf cpe:/h:oneaccess:1641 cpe:/h:sony:bravia_kdl-32v5500
+Aggressive OS guesses: Ricoh Aficio SP C240SF printer (90%), OneAccess 1641 router (88%), Ricoh Aficio SP C210SF printer (87%), Sony Bravia V5500-series TV (86%), Sony Bravia W5500-series TV (86%)
+No exact OS matches for host (test conditions non-ideal).
+Network Distance: 2 hops
+TCP Sequence Prediction: Difficulty=255 (Good luck!)
+IP ID Sequence Generation: Incremental
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
+
+TRACEROUTE (using port 80/tcp)
+HOP RTT       ADDRESS
+1   219.23 ms 10.10.14.1
+2   219.68 ms control.htb (10.10.10.167)
+
+Read data files from: /usr/bin/../share/nmap
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Fri Jan 10 04:19:10 2020 -- 1 IP address (1 host up) scanned in 53.45 seconds
