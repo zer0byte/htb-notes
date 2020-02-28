@@ -1,9 +1,9 @@
-# Nmap 7.80 scan initiated Wed Feb 26 10:14:02 2020 as: nmap -p 389 --script ldap-search --script-args "ldap.username=\"cn=Hugo Smith\"" -oN sauna_ldap sauna.htb
+# Nmap 7.80 scan initiated Thu Feb 27 09:52:19 2020 as: nmap -p 389 -T4 -A -v --script ldap-search -oN sauna_ldap_search_nmap sauna.htb
 Nmap scan report for sauna.htb (10.10.10.175)
-Host is up (0.45s latency).
+Host is up (0.20s latency).
 
-PORT    STATE SERVICE
-389/tcp open  ldap
+PORT    STATE SERVICE VERSION
+389/tcp open  ldap    Microsoft Windows Active Directory LDAP (Domain: EGOTISTICAL-BANK.LOCAL0., Site: Default-First-Site-Name)
 | ldap-search: 
 |   Context: DC=EGOTISTICAL-BANK,DC=LOCAL
 |     dn: DC=EGOTISTICAL-BANK,DC=LOCAL
@@ -13,7 +13,7 @@ PORT    STATE SERVICE
 |         distinguishedName: DC=EGOTISTICAL-BANK,DC=LOCAL
 |         instanceType: 5
 |         whenCreated: 2020/01/23 05:44:25 UTC
-|         whenChanged: 2020/02/26 18:04:33 UTC
+|         whenChanged: 2020/02/27 10:49:02 UTC
 |         subRefs: DC=ForestDnsZones,DC=EGOTISTICAL-BANK,DC=LOCAL
 |         subRefs: DC=DomainDnsZones,DC=EGOTISTICAL-BANK,DC=LOCAL
 |         subRefs: CN=Configuration,DC=EGOTISTICAL-BANK,DC=LOCAL
@@ -22,8 +22,8 @@ PORT    STATE SERVICE
 |         uSNChanged: 53269
 |         name: EGOTISTICAL-BANK
 |         objectGUID: 504e6ec-c122-a143-93c0-cf487f83363
-|         replUpToDateVector: \x02\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\xFDZ\x85\x92F\xDE^A\xAAVnj@#\xF6\x0C\x0B\xD0\x00\x00\x00\x00\x00\x00/Dg\x14\x03\x00\x00\x00@\xBE\xE0\xB3\xC6%\xECD\xB2\xB9\x9F\xF8\D\xB2\xEC	\xB0\x00\x00\x00\x00\x00\x00\xD4\x04R\x14\x03\x00\x00\x00
-|         creationTime: 132272138734980093
+|         replUpToDateVector: \x02\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\xFDZ\x85\x92F\xDE^A\xAAVnj@#\xF6\x0C\x0B\xD0\x00\x00\x00\x00\x00\x00\x9C/h\x14\x03\x00\x00\x00@\xBE\xE0\xB3\xC6%\xECD\xB2\xB9\x9F\xF8\D\xB2\xEC	\xB0\x00\x00\x00\x00\x00\x00\xD4\x04R\x14\x03\x00\x00\x00
+|         creationTime: 132272741422253062
 |         forceLogoff: -9223372036854775808
 |         lockoutDuration: -18000000000
 |         lockOutObservationWindow: -18000000000
@@ -83,8 +83,22 @@ PORT    STATE SERVICE
 |     dn: CN=NTDS Quotas,DC=EGOTISTICAL-BANK,DC=LOCAL
 |     dn: CN=Managed Service Accounts,DC=EGOTISTICAL-BANK,DC=LOCAL
 |     dn: CN=Keys,DC=EGOTISTICAL-BANK,DC=LOCAL
+|     dn: CN=Hugo Smith,DC=EGOTISTICAL-BANK,DC=LOCAL
 |     dn: CN=TPM Devices,DC=EGOTISTICAL-BANK,DC=LOCAL
-|     dn: CN=Builtin,DC=EGOTISTICAL-BANK,DC=LOCAL
-|_    dn: CN=Hugo Smith,DC=EGOTISTICAL-BANK,DC=LOCAL
+|_    dn: CN=Builtin,DC=EGOTISTICAL-BANK,DC=LOCAL
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+OS fingerprint not ideal because: Missing a closed TCP port so results incomplete
+No OS matches for host
+Network Distance: 2 hops
+TCP Sequence Prediction: Difficulty=263 (Good luck!)
+IP ID Sequence Generation: Incremental
+Service Info: Host: SAUNA; OS: Windows; CPE: cpe:/o:microsoft:windows
 
-# Nmap done at Wed Feb 26 10:14:07 2020 -- 1 IP address (1 host up) scanned in 4.81 seconds
+TRACEROUTE (using port 389/tcp)
+HOP RTT       ADDRESS
+1   235.40 ms 10.10.14.1
+2   235.93 ms sauna.htb (10.10.10.175)
+
+Read data files from: /usr/bin/../share/nmap
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Thu Feb 27 09:52:36 2020 -- 1 IP address (1 host up) scanned in 16.71 seconds
