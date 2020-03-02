@@ -1,0 +1,9 @@
+# Nmap 7.80 scan initiated Mon Mar  2 15:35:26 2020 as: nmap -p- --max-retries 5 --min-rate 5000 -oN book_all_port book.htb
+Nmap scan report for book.htb (10.10.10.176)
+Host is up (0.24s latency).
+Not shown: 65533 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+80/tcp open  http
+
+# Nmap done at Mon Mar  2 15:35:44 2020 -- 1 IP address (1 host up) scanned in 18.02 seconds
