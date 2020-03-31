@@ -1,0 +1,24 @@
+# Nmap 7.80 scan initiated Sat Mar 28 10:19:02 2020 as: nmap -p- --max-retries 5 --min-rate 5000 -oN remote.all.ports remote.htb
+Warning: 10.10.10.180 giving up on port because retransmission cap hit (5).
+Nmap scan report for remote.htb (10.10.10.180)
+Host is up (0.23s latency).
+Not shown: 63928 closed ports, 1591 filtered ports
+PORT      STATE SERVICE
+21/tcp    open  ftp
+80/tcp    open  http
+111/tcp   open  rpcbind
+135/tcp   open  msrpc
+139/tcp   open  netbios-ssn
+445/tcp   open  microsoft-ds
+2049/tcp  open  nfs
+5985/tcp  open  wsman
+47001/tcp open  winrm
+49664/tcp open  unknown
+49665/tcp open  unknown
+49666/tcp open  unknown
+49667/tcp open  unknown
+49678/tcp open  unknown
+49679/tcp open  unknown
+49680/tcp open  unknown
+
+# Nmap done at Sat Mar 28 10:19:30 2020 -- 1 IP address (1 host up) scanned in 27.67 seconds
